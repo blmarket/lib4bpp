@@ -171,14 +171,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\myd3d.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\myd3d.h"
-			>
-		</File>
-		<File
 			RelativePath=".\TerrainGrass.h"
 			>
 		</File>
