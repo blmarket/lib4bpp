@@ -20,15 +20,15 @@ namespace DxWinForm
 
         public void OnCreateVertexBuffer(object sender, EventArgs e)
         {
-            CustomVertex.PositionColored[] points = new CustomVertex.PositionColored[4]
+            CustomVertex.PositionTextured[] points = new CustomVertex.PositionTextured[4]
             {
-                new CustomVertex.PositionColored(-3,0,-3,Color.White.ToArgb()),
-                new CustomVertex.PositionColored(-3,0,3,Color.White.ToArgb()),
-                new CustomVertex.PositionColored(3,0,3,Color.White.ToArgb()),
-                new CustomVertex.PositionColored(3,0,-3,Color.White.ToArgb()),
+                new CustomVertex.PositionTextured(-3,0,-3,0,0),
+                new CustomVertex.PositionTextured(-3,0,3,0,1),
+                new CustomVertex.PositionTextured(3,0,3,1,1),
+                new CustomVertex.PositionTextured(3,0,-3,1,0),
             };
 
-            CustomVertex.PositionColored[] vertices = new CustomVertex.PositionColored[6]
+            CustomVertex.PositionTextured[] vertices = new CustomVertex.PositionTextured[6]
             {
                 points[0],
                 points[1],
@@ -44,10 +44,20 @@ namespace DxWinForm
 
         private void InitObjects()
         {
-            m_VB = new VertexBuffer(typeof(CustomVertex.PositionColored), 6, dx_device, Usage.WriteOnly, CustomVertex.PositionColored.Format,
+            m_VB = new VertexBuffer(typeof(CustomVertex.PositionTextured), 6, dx_device, Usage.WriteOnly, CustomVertex.PositionTextured.Format,
                 Pool.Default);
             m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
             OnCreateVertexBuffer(m_VB, null);
+            m_Mesh = Mesh.Teapot(dx_device);
+            Bitmap Bits = new Bitmap(512,512);
+            Graphics g = Graphics.FromImage(Bits);
+            Pen pen = new Pen(Color.Magenta);
+            g.Clear(Color.White);
+            g.DrawRectangle(pen, 50, 50, 100, 100);
+            Bits.Save("test.bmp");
+            m_Tex = TextureLoader.FromFile(dx_device, "test.bmp");
+//            System.IO.Stream infile = new System.IO.FileStream("test.bmp",System.IO.FileMode.Open);
+//            m_Tex = Texture.FromStream(dx_device, infile, Usage.None, Pool.Default);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -66,20 +76,20 @@ namespace DxWinForm
 
                 InitObjects();
             }
-            catch (DirectXException)
+            catch (DirectXException ee)
             {
                 // do nothing.
+                MessageBox.Show("NO");
+                throw ee;
             }
         }
-
-        private Device dx_device = null;
-        private VertexBuffer m_VB = null;
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
             dx_device.Clear(ClearFlags.Target, Color.Black.ToArgb(), 1.0f, 0);
 
             dx_device.BeginScene();
+            dx_device.SetTexture(0, m_Tex);
             dx_device.SetStreamSource(0, m_VB, 0);
             dx_device.VertexFormat = m_VB.Description.VertexFormat;
 
@@ -95,6 +105,19 @@ namespace DxWinForm
             dx_device.EndScene();
 
             dx_device.Present();
+        }
+
+        private Device dx_device = null;
+        private VertexBuffer m_VB = null;
+        private Mesh m_Mesh = null;
+        private Texture m_Tex = null;
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if(m_Tex != null) m_Tex.Dispose();
+            m_VB.Dispose();
+            m_Mesh.Dispose();           
+            dx_device.Dispose();
         }
     }
 }
