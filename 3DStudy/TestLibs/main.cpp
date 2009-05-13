@@ -1,6 +1,5 @@
 #include "boost/test/minimal.hpp"
 #include "Vertex.h"
-#include "myd3d.h"
 
 struct __Vertex
 {

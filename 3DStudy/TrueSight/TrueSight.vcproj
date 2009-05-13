@@ -171,10 +171,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\TerrainGrass.h"
-			>
-		</File>
-		<File
 			RelativePath=".\Vertex.h"
 			>
 		</File>

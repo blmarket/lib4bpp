@@ -10,7 +10,6 @@ public:
 
 	void Render();
 
-private:
 	LPDIRECT3D9			m_pD3d;
 	LPDIRECT3DDEVICE9	m_pDevice;
 };
