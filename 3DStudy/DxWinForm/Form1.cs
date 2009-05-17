@@ -18,73 +18,16 @@ namespace DxWinForm
             InitializeComponent();
         }
 
-        public void OnCreateVertexBuffer(object sender, EventArgs e)
-        {
-            CustomVertex.PositionTextured[] points = new CustomVertex.PositionTextured[4]
-            {
-                new CustomVertex.PositionTextured(-3,0,-3,0,0),
-                new CustomVertex.PositionTextured(-3,0,3,0,1),
-                new CustomVertex.PositionTextured(3,0,3,1,1),
-                new CustomVertex.PositionTextured(3,0,-3,1,0),
-            };
-
-            CustomVertex.PositionTextured[] vertices = new CustomVertex.PositionTextured[6]
-            {
-                points[0],
-                points[1],
-                points[2],
-                points[0],
-                points[2],
-                points[3],
-            };
-
-            VertexBuffer vb = (VertexBuffer)sender;
-            vb.SetData((object)vertices,0,LockFlags.None);
-        }
-
-        public void OnCreateBillBoard(object sender, EventArgs e)
-        {
-            CustomVertex.TransformedTextured[] points = new CustomVertex.TransformedTextured[4]
-            {
-                new CustomVertex.TransformedTextured(5,5,0,1,0,0),
-                new CustomVertex.TransformedTextured(5,105,0,1,0,1),
-                new CustomVertex.TransformedTextured(105,5,0,1,1,0),
-                new CustomVertex.TransformedTextured(105,105,0,1,1,1),
-            };
-
-            CustomVertex.TransformedTextured[] vertices = new CustomVertex.TransformedTextured[6]
-            {
-                points[0],
-                points[1],
-                points[3],
-                points[0],
-                points[2],
-                points[3],
-            };
-
-            VertexBuffer vb = (VertexBuffer)sender;
-            vb.SetData((object)vertices, 0, LockFlags.None);
-        }
-
         private void InitObjects()
         {
-            VertexBuffer VB = new VertexBuffer(typeof(CustomVertex.PositionTextured), 6, dx_device, Usage.WriteOnly, CustomVertex.PositionTextured.Format,
-                Pool.Default);
-            VB.Created += new EventHandler(this.OnCreateVertexBuffer);
-            OnCreateVertexBuffer(VB, null);
-            m_Objects.Add(new KeyValuePair<int, VertexBuffer>(2, VB));
+            VertexBuffers.LargeGround ground = new VertexBuffers.LargeGround(dx_device);
+            m_Objects.Add(new KeyValuePair<int, VertexBuffer>(2, ground.m_VB));
 
-            VB = new VertexBuffer(
-                typeof(CustomVertex.TransformedTextured), 
-                6, 
-                dx_device, 
-                Usage.WriteOnly, 
-                CustomVertex.TransformedTextured.Format, 
-                Pool.Default);
+            VertexBuffers.MyBillBoard bill = new VertexBuffers.MyBillBoard(dx_device);
+            m_Objects.Add(new KeyValuePair<int,VertexBuffer>(2, bill.m_VB));
 
-            VB.Created += new EventHandler(this.OnCreateBillBoard);
-            OnCreateBillBoard(VB, null);
-            m_Objects.Add(new KeyValuePair<int, VertexBuffer>(2, VB));                
+            VertexBuffers.SmallGround sground = new VertexBuffers.SmallGround(dx_device);
+            m_Objects.Add(new KeyValuePair<int,VertexBuffer>(2, sground.m_VB));
 
             m_Mesh = Mesh.Teapot(dx_device);
             Bitmap Bits = new Bitmap(512,512);
@@ -105,8 +48,10 @@ namespace DxWinForm
 
             pp.Windowed = true;
             pp.SwapEffect = SwapEffect.Discard;
+            pp.BackBufferFormat = Format.Unknown;
             pp.EnableAutoDepthStencil = true;
-            pp.AutoDepthStencilFormat = DepthFormat.D16;
+            pp.AutoDepthStencilFormat = DepthFormat.D24S8;
+
             try
             {
                 dx_device = new Device(0, DeviceType.Hardware, this, CreateFlags.SoftwareVertexProcessing, pp);
@@ -114,9 +59,11 @@ namespace DxWinForm
                 dx_device.RenderState.ColorVertex = true;
                 dx_device.RenderState.Lighting = false;
                 dx_device.RenderState.FillMode = FillMode.Solid;
-/*                dx_device.RenderState.StencilEnable = true;
+                dx_device.RenderState.ZBufferEnable = true;
+                dx_device.RenderState.StencilEnable = true;
                 dx_device.RenderState.ReferenceStencil = 0;
-                dx_device.RenderState.StencilPass = StencilOperation.Increment;*/
+                dx_device.RenderState.StencilPass = StencilOperation.Increment;
+                dx_device.RenderState.AlphaBlendEnable = true;
 
                 InitObjects();
             }
@@ -130,7 +77,7 @@ namespace DxWinForm
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            dx_device.Clear(ClearFlags.Target, Color.Black, 1.0f, 0);
+            dx_device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Blue, 1.0f, 0);
 
             dx_device.BeginScene();
             dx_device.SetTexture(0, m_Tex);
@@ -143,12 +90,45 @@ namespace DxWinForm
             dx_device.SetTransform(TransformType.View, matView);
             dx_device.SetTransform(TransformType.Projection, matProj);
 
-            foreach (KeyValuePair<int, VertexBuffer> p in m_Objects)
+/*
             {
+                KeyValuePair<int, VertexBuffer> p = m_Objects[0];
                 dx_device.SetStreamSource(0, p.Value, 0);
                 dx_device.VertexFormat = p.Value.Description.VertexFormat;
                 dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, p.Key);
             }
+ */
+
+/*
+            {
+                KeyValuePair<int, VertexBuffer> p = m_Objects[1];
+
+                dx_device.SetStreamSource(0, p.Value, 0);
+                dx_device.VertexFormat = p.Value.Description.VertexFormat;
+                dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, p.Key);
+            }
+*/
+
+            {
+                KeyValuePair<int, VertexBuffer> p = m_Objects[2];
+
+                dx_device.SetStreamSource(0, p.Value, 0);
+                dx_device.VertexFormat = p.Value.Description.VertexFormat;
+                dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, p.Key);
+            }
+            
+            dx_device.Clear(ClearFlags.Stencil, Color.Black, 0, 0);
+            dx_device.RenderState.StencilEnable = true;
+            dx_device.RenderState.ReferenceStencil = 0;
+            dx_device.RenderState.StencilFunction = Compare.Equal;
+            dx_device.RenderState.StencilPass = StencilOperation.Increment;
+            dx_device.RenderState.AlphaBlendEnable = true;
+            dx_device.RenderState.SourceBlend = Blend.SourceAlpha;
+            dx_device.RenderState.DestinationBlend = Blend.InvSourceAlpha;
+
+
+            dx_device.RenderState.StencilEnable = false;
+            
 
             dx_device.EndScene();
 
@@ -169,6 +149,128 @@ namespace DxWinForm
             }
             m_Mesh.Dispose();           
             dx_device.Dispose();
+        }
+    }
+
+    namespace VertexBuffers
+    {
+        public class LargeGround
+        {
+            public LargeGround(Device dx_device)
+            {
+                m_VB = new VertexBuffer(typeof(CustomVertex.PositionTextured), 6, dx_device, Usage.WriteOnly, CustomVertex.PositionTextured.Format,
+                    Pool.Default);
+                m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
+                OnCreateVertexBuffer(m_VB, null);
+            }
+
+            public void OnCreateVertexBuffer(object sender, EventArgs e)
+            {
+                CustomVertex.PositionTextured[] points = new CustomVertex.PositionTextured[4]
+                {
+                    new CustomVertex.PositionTextured(-3,0,-3,0,0),
+                    new CustomVertex.PositionTextured(-3,0,3,0,1),
+                    new CustomVertex.PositionTextured(3,0,3,1,1),
+                    new CustomVertex.PositionTextured(3,0,-3,1,0),
+                };
+
+                CustomVertex.PositionTextured[] vertices = new CustomVertex.PositionTextured[6]
+                {
+                    points[0],
+                    points[1],
+                    points[2],
+                    points[0],
+                    points[2],
+                    points[3],
+                };
+
+                VertexBuffer vb = (VertexBuffer)sender;
+                vb.SetData((object)vertices, 0, LockFlags.None);
+            }
+
+            public VertexBuffer m_VB;
+        }
+
+        public class MyBillBoard
+        {
+            public void OnCreateBillBoard(object sender, EventArgs e)
+            {
+                CustomVertex.TransformedColored[] points = new CustomVertex.TransformedColored[4]
+                {
+                    new CustomVertex.TransformedColored(5,5,0,1,Color.FromArgb(50,Color.Blue).ToArgb()),
+                    new CustomVertex.TransformedColored(5,105,0,1,Color.FromArgb(50,Color.Magenta).ToArgb()),
+                    new CustomVertex.TransformedColored(105,5,0,1,Color.FromArgb(50,Color.MediumBlue).ToArgb()),
+                    new CustomVertex.TransformedColored(105,105,0,1,Color.FromArgb(50,Color.Linen).ToArgb()),
+                };
+
+                CustomVertex.TransformedColored[] vertices = new CustomVertex.TransformedColored[6]
+                {
+                    points[0],
+                    points[1],
+                    points[3],
+                    points[0],
+                    points[2],
+                    points[3],
+                };
+
+                VertexBuffer vb = (VertexBuffer)sender;
+                vb.SetData((object)vertices, 0, LockFlags.None);
+            }
+
+            public MyBillBoard(Device dx_device)
+            {
+                m_VB = new VertexBuffer(
+                    typeof(CustomVertex.TransformedColored),
+                    6,
+                    dx_device,
+                    Usage.WriteOnly,
+                    CustomVertex.TransformedColored.Format,
+                    Pool.Default);
+
+                m_VB.Created += new EventHandler(this.OnCreateBillBoard);
+                OnCreateBillBoard(m_VB, null);
+            }
+
+            public VertexBuffer m_VB;
+        }
+
+        public class SmallGround
+        {
+            public SmallGround(Device dx_device)
+            {
+                m_VB = new VertexBuffer(typeof(CustomVertex.PositionColored), 6, dx_device, Usage.WriteOnly, CustomVertex.PositionColored.Format,
+                    Pool.Default);
+                m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
+                OnCreateVertexBuffer(m_VB, null);
+            }
+
+            public void OnCreateVertexBuffer(object sender, EventArgs e)
+            {
+                Color gray = Color.FromArgb(50, Color.Black);
+
+                CustomVertex.PositionColored[] points = new CustomVertex.PositionColored[4]
+            {
+                new CustomVertex.PositionColored(-1,0,-1,gray.ToArgb()),
+                new CustomVertex.PositionColored(-1,0,1,gray.ToArgb()),
+                new CustomVertex.PositionColored(1,0,1,gray.ToArgb()),
+                new CustomVertex.PositionColored(1,0,-1,gray.ToArgb()),
+            };
+
+                CustomVertex.PositionColored[] vertices = new CustomVertex.PositionColored[6]
+            {
+                points[0],
+                points[1],
+                points[2],
+                points[0],
+                points[2],
+                points[3],
+            };
+
+                VertexBuffer vb = (VertexBuffer)sender;
+                vb.SetData((object)vertices, 0, LockFlags.None);
+            }
+
+            public VertexBuffer m_VB;
         }
     }
 }
