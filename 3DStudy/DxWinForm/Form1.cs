@@ -32,6 +32,9 @@ namespace DxWinForm
             VertexBuffers.ShadowFullScreen shadows = new VertexBuffers.ShadowFullScreen(dx_device, 500, 500);
             m_Objects.Add(shadows);
 
+            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 10, -3, 3, -3, 3);
+            m_Objects.Add(walls);            
+
             m_Mesh = Mesh.Teapot(dx_device);
             Bitmap Bits = new Bitmap(512,512);
             Graphics g = Graphics.FromImage(Bits);
@@ -78,7 +81,26 @@ namespace DxWinForm
             }
         }
 
-        private void Form1_Paint(object sender, PaintEventArgs e)
+        private void Render2()
+        {
+            dx_device.Clear(ClearFlags.Target | ClearFlags.ZBuffer | ClearFlags.Stencil, Color.Blue, 1.0f, 0);
+            dx_device.BeginScene();
+
+            Matrix matWorld, matView, matProj;
+            matWorld = matView = matProj = Matrix.Identity;
+            matView = Matrix.LookAtLH(new Vector3(5, 5, -5), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+            matProj = Matrix.PerspectiveFovLH((float)Math.PI / 4, 1.0f, 0.1f, 100.0f);
+            dx_device.SetTransform(TransformType.World, matWorld);
+            dx_device.SetTransform(TransformType.View, matView);
+            dx_device.SetTransform(TransformType.Projection, matProj);
+
+            m_Objects[4].render(dx_device);
+
+            dx_device.EndScene();
+            dx_device.Present();
+        }
+
+        private void Render1()
         {
             dx_device.Clear(ClearFlags.Target | ClearFlags.ZBuffer | ClearFlags.Stencil, Color.Blue, 1.0f, 0);
 
@@ -92,6 +114,14 @@ namespace DxWinForm
             dx_device.SetTransform(TransformType.World, matWorld);
             dx_device.SetTransform(TransformType.View, matView);
             dx_device.SetTransform(TransformType.Projection, matProj);
+
+            // 원래 객체를 그린다.
+            dx_device.RenderState.ShadeMode = ShadeMode.Gouraud;
+            dx_device.RenderState.CullMode = Cull.None;
+            dx_device.RenderState.ZBufferWriteEnable = true;
+            dx_device.RenderState.StencilEnable = false;
+            dx_device.RenderState.AlphaBlendEnable = false;
+            m_Objects[4].render(dx_device);
 
             // 그림자 영역을 그린다.
             dx_device.RenderState.ZBufferWriteEnable = false;
@@ -117,6 +147,7 @@ namespace DxWinForm
             dx_device.RenderState.AlphaBlendEnable = false;
             m_Objects[0].render(dx_device);
             m_Objects[1].render(dx_device);
+            m_Objects[4].render(dx_device);
 
 
             // 그림자에 해당하는 부분을 다시 그린다.
@@ -146,24 +177,24 @@ namespace DxWinForm
             dx_device.RenderState.StencilEnable = false;
             dx_device.RenderState.AlphaBlendEnable = false;
  
-
             dx_device.EndScene();
 
             dx_device.Present();
         }
 
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            Render1();
+        }
+
         private Device dx_device = null;
-        private List<VertexBuffers.DrawVertexBuffer> m_Objects = new List<VertexBuffers.DrawVertexBuffer>();
+        private List<VertexBuffers.DrawItem> m_Objects = new List<VertexBuffers.DrawItem>();
         private Mesh m_Mesh = null;
         private Texture m_Tex = null;
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             if(m_Tex != null) m_Tex.Dispose();
-            foreach (VertexBuffers.DrawVertexBuffer p in m_Objects)
-            {
-                p.m_VB.Dispose();
-            }
             m_Mesh.Dispose();           
             dx_device.Dispose();
         }
@@ -306,6 +337,89 @@ namespace DxWinForm
             }
         }
 
+        public class Wall : DrawVertexBuffer
+        {
+            public Wall(Device dx_device,Vector2 p1,Vector2 p2,float height)
+            {
+                m_VB = new VertexBuffer(typeof(CustomVertex.PositionColored), 6, dx_device, Usage.WriteOnly, CustomVertex.PositionColored.Format,
+                    Pool.Default);
+                this.p1 = p1;
+                this.p2 = p2;
+                this.height = height;
+                m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
+                m_nVertices = 2;
+                OnCreateVertexBuffer(m_VB, null);
+            }
+
+            public void OnCreateVertexBuffer(object sender, EventArgs e)
+            {
+                CustomVertex.PositionColored[] points = new CustomVertex.PositionColored[4]
+                {
+                    new CustomVertex.PositionColored(p1.X,0,p1.Y,Color.Red.ToArgb()),
+                    new CustomVertex.PositionColored(p1.X,height,p1.Y,Color.Red.ToArgb()),
+                    new CustomVertex.PositionColored(p2.X,0,p2.Y,Color.Red.ToArgb()),
+                    new CustomVertex.PositionColored(p2.X,height,p2.Y,Color.Red.ToArgb()),
+                };
+
+                CustomVertex.PositionColored[] vertices = new CustomVertex.PositionColored[6]
+                {
+                    points[0],
+                    points[1],
+                    points[3],
+                    points[0],
+                    points[3],
+                    points[2],
+                };
+
+                VertexBuffer vb = (VertexBuffer)sender;
+                vb.SetData((object)vertices, 0, LockFlags.None);
+            }
+
+            private Vector2 p1, p2;
+            private float height;
+        }
+
+        public class Walls : DrawItem
+        {
+            public void AddWall(Device dx_device, Vector2 p1, Vector2 p2)
+            {
+                AddWall(dx_device, p1, p2, 0.8f);
+            }
+
+            public void AddWall(Device dx_device,Vector2 p1, Vector2 p2, float height)
+            {
+                Wall tmp = new Wall(dx_device, p1, p2, height);
+                m_List.Add(tmp);
+            }
+
+            public override void render(Device dx_device)
+            {
+                foreach (Wall w in m_List)
+                {
+                    w.render(dx_device);
+                }
+            }
+
+            public static Walls CreateRandomWalls(Device dx_device, int cnt, float minx, float maxx, float miny, float maxy)
+            {
+                Walls ret = new Walls();
+                Random rand = new Random();
+                for (int i = 0; i < cnt; i++)
+                {
+                    Vector2 p1, p2;
+                    p1.X = (float)rand.NextDouble() * (maxx - minx) + minx;
+                    p1.Y = (float)rand.NextDouble() * (maxy - miny) + miny;
+                    p2.X = (float)rand.NextDouble() * (maxx - minx) + minx;
+                    p2.Y = (float)rand.NextDouble() * (maxy - miny) + miny;
+                    ret.AddWall(dx_device, p1, p2);
+                }
+
+                return ret;
+            }
+
+            private List<Wall> m_List = new List<Wall>();
+        }
+
         public class ShadowFullScreen : DrawVertexBuffer
         {
             public ShadowFullScreen(Device dx_device,float sx,float sy)
@@ -321,7 +435,7 @@ namespace DxWinForm
 
             public void OnCreateVertexBuffer(object sender, EventArgs e)
             {
-                Color gray = Color.FromArgb(200, Color.Black);
+                Color gray = Color.FromArgb(127, Color.Black);
 
                 CustomVertex.TransformedColored[] points = new CustomVertex.TransformedColored[4]
                 {
@@ -335,7 +449,7 @@ namespace DxWinForm
                 {
                     points[0],
                     points[1],
-                    points[2],
+                    points[3],
                     points[0],
                     points[2],
                     points[3],
