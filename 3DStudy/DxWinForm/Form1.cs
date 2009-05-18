@@ -93,29 +93,7 @@ namespace DxWinForm
             dx_device.SetTransform(TransformType.View, matView);
             dx_device.SetTransform(TransformType.Projection, matProj);
 
-
-/*
-            {
-                KeyValuePair<int, VertexBuffer> p = m_Objects[0];
-                dx_device.SetStreamSource(0, p.Value, 0);
-                dx_device.VertexFormat = p.Value.Description.VertexFormat;
-                dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, p.Key);
-            }
-
-
-
-            {
-                KeyValuePair<int, VertexBuffer> p = m_Objects[1];
-
-                dx_device.SetStreamSource(0, p.Value, 0);
-                dx_device.VertexFormat = p.Value.Description.VertexFormat;
-                dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, p.Key);
-            }
- */
-
-            m_Objects[0].render(dx_device);
-
-
+            // 그림자 영역을 그린다.
             dx_device.RenderState.ZBufferWriteEnable = false;
             dx_device.RenderState.StencilEnable = true;
             dx_device.RenderState.ShadeMode = ShadeMode.Flat;
@@ -126,15 +104,24 @@ namespace DxWinForm
             dx_device.RenderState.StencilMask = -1;
             dx_device.RenderState.StencilWriteMask = -1;
             dx_device.RenderState.StencilPass = StencilOperation.Increment;
-
-
             dx_device.RenderState.AlphaBlendEnable = true;
             dx_device.RenderState.SourceBlend = Blend.Zero;
             dx_device.RenderState.DestinationBlend = Blend.One;
-
             m_Objects[2].render(dx_device);
 
+            // 원래 객체를 그린다.
+            dx_device.RenderState.ShadeMode = ShadeMode.Gouraud;
+            dx_device.RenderState.CullMode = Cull.None;
+            dx_device.RenderState.ZBufferWriteEnable = true;
+            dx_device.RenderState.StencilEnable = false;
+            dx_device.RenderState.AlphaBlendEnable = false;
+            m_Objects[0].render(dx_device);
+            m_Objects[1].render(dx_device);
+
+
+            // 그림자에 해당하는 부분을 다시 그린다.
             dx_device.RenderState.ZBufferEnable = false;
+            dx_device.RenderState.ZBufferWriteEnable = false;
             dx_device.RenderState.StencilEnable = true;
             dx_device.RenderState.AlphaBlendEnable = true;
             dx_device.RenderState.SourceBlend = Blend.SourceAlpha;
