@@ -121,7 +121,7 @@ namespace DxWinForm
             dx_device.RenderState.ZBufferWriteEnable = true;
             dx_device.RenderState.StencilEnable = false;
             dx_device.RenderState.AlphaBlendEnable = false;
-            m_Objects[4].render(dx_device);
+//            m_Objects[4].render(dx_device);
 
             // 그림자 영역을 그린다.
             dx_device.RenderState.ZBufferWriteEnable = false;
@@ -137,8 +137,11 @@ namespace DxWinForm
             dx_device.RenderState.AlphaBlendEnable = true;
             dx_device.RenderState.SourceBlend = Blend.Zero;
             dx_device.RenderState.DestinationBlend = Blend.One;
-            m_Objects[2].render(dx_device);
-
+            matWorld = Matrix.Zero;
+            matWorld.M11 = matWorld.M21 = matWorld.M23 = matWorld.M33 = matWorld.M44 = 1;
+            dx_device.Transform.World = matWorld;
+            m_Objects[4].render(dx_device);
+            dx_device.Transform.World = Matrix.Identity;
             // 원래 객체를 그린다.
             dx_device.RenderState.ShadeMode = ShadeMode.Gouraud;
             dx_device.RenderState.CullMode = Cull.None;
@@ -151,7 +154,7 @@ namespace DxWinForm
 
 
             // 그림자에 해당하는 부분을 다시 그린다.
-            dx_device.RenderState.ZBufferEnable = false;
+            dx_device.RenderState.ZBufferEnable = true;
             dx_device.RenderState.ZBufferWriteEnable = false;
             dx_device.RenderState.StencilEnable = true;
             dx_device.RenderState.AlphaBlendEnable = true;
@@ -159,8 +162,8 @@ namespace DxWinForm
             dx_device.RenderState.DestinationBlend = Blend.InvSourceAlpha;
 
             dx_device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
-            dx_device.TextureState[0].ColorArgument2 = TextureArgument.Diffuse;
-            dx_device.TextureState[0].ColorOperation = TextureOperation.Modulate;
+            dx_device.TextureState[0].ColorArgument2 = TextureArgument.Constant;
+            dx_device.TextureState[0].ColorOperation = TextureOperation.SelectArg2;
             dx_device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
             dx_device.TextureState[0].AlphaArgument2 = TextureArgument.Diffuse;
             dx_device.TextureState[0].AlphaOperation = TextureOperation.Modulate;
@@ -169,8 +172,15 @@ namespace DxWinForm
             dx_device.RenderState.StencilFunction = Compare.LessEqual;
             dx_device.RenderState.StencilPass = StencilOperation.Keep;
 
-            m_Objects[3].render(dx_device);
+            m_Objects[0].render(dx_device);
 
+            dx_device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
+            dx_device.TextureState[0].ColorArgument2 = TextureArgument.Diffuse;
+            dx_device.TextureState[0].ColorOperation = TextureOperation.Modulate;
+            dx_device.TextureState[0].AlphaArgument1 = TextureArgument.TextureColor;
+            dx_device.TextureState[0].AlphaArgument2 = TextureArgument.Diffuse;
+            dx_device.TextureState[0].AlphaOperation = TextureOperation.Modulate;
+            
             dx_device.RenderState.ShadeMode = ShadeMode.Gouraud;
             dx_device.RenderState.CullMode = Cull.None;
             dx_device.RenderState.ZBufferWriteEnable = true;
