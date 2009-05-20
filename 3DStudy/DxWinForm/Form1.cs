@@ -32,7 +32,7 @@ namespace DxWinForm
             VertexBuffers.ShadowFullScreen shadows = new VertexBuffers.ShadowFullScreen(dx_device, 500, 500);
             m_Objects.Add(shadows);
 
-            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 10, -3, 3, -3, 3);
+            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 2, -3, 3, -3, 3);
             m_Objects.Add(walls);            
 
             m_Mesh = Mesh.Teapot(dx_device);
@@ -138,7 +138,8 @@ namespace DxWinForm
             dx_device.RenderState.SourceBlend = Blend.Zero;
             dx_device.RenderState.DestinationBlend = Blend.One;
             matWorld = Matrix.Zero;
-            matWorld.M11 = matWorld.M21 = matWorld.M23 = matWorld.M33 = matWorld.M44 = 1;
+            matWorld.M11 = matWorld.M33 = matWorld.M44 = 1;
+            matWorld.M24 = -0.9f;
             dx_device.Transform.World = matWorld;
             m_Objects[4].render(dx_device);
             dx_device.Transform.World = Matrix.Identity;
