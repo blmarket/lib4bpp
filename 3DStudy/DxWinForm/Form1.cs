@@ -347,7 +347,7 @@ namespace DxWinForm
 
         public class Wall : DrawVertexBuffer
         {
-            public Wall(Device dx_device,Vector2 p1,Vector2 p2,float height)
+            public Wall(Device dx_device,Vector2 p1,Vector2 p2,float height,Vector2[] boundary)
             {
                 m_VB = new VertexBuffer(typeof(CustomVertex.PositionColored), 6, dx_device, Usage.WriteOnly, CustomVertex.PositionColored.Format,
                     Pool.Default);
@@ -357,7 +357,7 @@ namespace DxWinForm
                 m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
                 m_nPrimitives = 2;
                 OnCreateVertexBuffer(m_VB, null);
-                shadow = new Shadow(dx_device, p1, p2);
+                shadow = new Shadow(dx_device, p1, p2, boundary);
             }
 
             public void OnCreateVertexBuffer(object sender, EventArgs e)
@@ -388,69 +388,81 @@ namespace DxWinForm
             private float height;
             public Shadow shadow;
 
-            public class Shadow : DrawVertexBuffer
+            public class Shadow : DrawItem
             {
-                public void OnCreateVertexBuffer(Object sender, EventArgs e)
+                public Vector2 GetPoint(double angle)
                 {
-                    CustomVertex.PositionOnly[] points = new CustomVertex.PositionOnly[4]
-                    {
-                        new CustomVertex.PositionOnly(ptrs[0].X, 0, ptrs[0].Y),
-                        new CustomVertex.PositionOnly(ptrs[1].X, 0, ptrs[1].Y),
-                        new CustomVertex.PositionOnly(ptrs[2].X, 0, ptrs[2].Y),
-                        new CustomVertex.PositionOnly(ptrs[3].X, 0, ptrs[3].Y),
-                    };
-
-                    CustomVertex.PositionOnly[] vertices = new CustomVertex.PositionOnly[6]
-                    {
-                        points[0],
-                        points[1],
-                        points[3],
-                        points[0],
-                        points[3],
-                        points[2],
-                    };
-
-                    VertexBuffer vb = (VertexBuffer)sender;
-                    vb.SetData((object)vertices, 0, LockFlags.None);
+                    return new Vector2((float)(25.0 * Math.Cos(angle)), (float)(25.0 * Math.Sin(angle)));
                 }
 
-                public Shadow(Device dx_device, Vector2 p1, Vector2 p2)
+                public Shadow(Device dx_device, Vector2 p1, Vector2 p2, Vector2[] boundary)
                 {
-                    Vector2 p1x = Vector2.Normalize(p1), p2x = Vector2.Normalize(p2);
                     double angle1, angle2;
                     angle1 = Math.Atan2(p1.Y, p1.X);
-                    angle2 = Math.Atan2(p2.Y, p1.X);
+                    angle2 = Math.Atan2(p2.Y, p2.X);
                     if (angle2 < angle1) angle2 += Math.PI * 2.0;
                     if (angle2 - angle1 > Math.PI)
                     {
                         double tmp = angle1; angle1 = angle2; angle2 = tmp;
+                        Vector2 tmpp = p1; p1 = p2; p2 = tmpp;
                     }
-                    p1x.Multiply(25);
-                    p2x.Multiply(25);
 
-                    ptrs = new Vector2[4] { p1, p2, p1x, p2x };
+                    List<Vector2> ptrs = new List<Vector2>();
+                    ptrs.Add(p1);
+                    ptrs.Add(GetPoint(angle1));
+                    foreach (Vector2 vec in boundary.OrderBy(Vector2 => Math.Atan2(Vector2.Y, Vector2.X)))
+                    {
+                        double angle = Math.Atan2(vec.Y, vec.X);
+                        while (angle < angle1) angle += Math.PI * 2.0;
+                        if (angle < angle2)
+                        {
+                            ptrs.Add(vec);
+                        }
+                    }
 
-                    m_nPrimitives = 2;
-                    m_VB = new VertexBuffer(typeof(CustomVertex.PositionOnly), 6, dx_device, Usage.WriteOnly, CustomVertex.PositionOnly.Format,
+                    ptrs.Add(GetPoint(angle2));
+                    ptrs.Add(p2);
+
+                    points = new CustomVertex.PositionOnly[ptrs.Count];
+                    for (int i = 0; i < ptrs.Count; i++)
+                    {
+                        points[i] = new CustomVertex.PositionOnly(ptrs[i].X, 0, ptrs[i].Y);
+                    }
+
+                    m_VB = new VertexBuffer(typeof(CustomVertex.PositionOnly), points.Count(), dx_device, Usage.WriteOnly, CustomVertex.PositionOnly.Format,
                         Pool.Default);
                     m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
                     OnCreateVertexBuffer(m_VB, null);
                 }
 
-                Vector2[] ptrs;
+                public void OnCreateVertexBuffer(Object sender, EventArgs e)
+                {
+                    VertexBuffer vb = (VertexBuffer)sender;
+                    vb.SetData((object)points, 0, LockFlags.None);
+                }
+
+                public override void render(Device dx_device)
+                {
+                    dx_device.SetStreamSource(0, m_VB, 0);
+                    dx_device.VertexFormat = m_VB.Description.VertexFormat;
+                    dx_device.DrawPrimitives(PrimitiveType.TriangleFan, 0, points.Count() - 2);
+                }
+
+                CustomVertex.PositionOnly[] points;
+                VertexBuffer m_VB;
             }
         }
 
         public class Walls : DrawItem
         {
-            public void AddWall(Device dx_device, Vector2 p1, Vector2 p2)
+            public void AddWall(Device dx_device, Vector2 p1, Vector2 p2, Vector2[] boundary)
             {
-                AddWall(dx_device, p1, p2, 0.8f);
+                AddWall(dx_device, p1, p2, 0.8f, boundary);
             }
 
-            public void AddWall(Device dx_device,Vector2 p1, Vector2 p2, float height)
+            public void AddWall(Device dx_device,Vector2 p1, Vector2 p2, float height, Vector2[] boundary)
             {
-                Wall tmp = new Wall(dx_device, p1, p2, height);
+                Wall tmp = new Wall(dx_device, p1, p2, height, boundary);
                 m_List.Add(tmp);
             }
 
@@ -474,6 +486,13 @@ namespace DxWinForm
             {
                 Walls ret = new Walls();
                 Random rand = new Random();
+
+                Vector2[] boundary = new Vector2[4] { 
+                    new Vector2(minx,miny),
+                    new Vector2(minx,maxy),
+                    new Vector2(maxx,miny),
+                    new Vector2(maxx,maxy),
+                };
                 for (int i = 0; i < cnt; i++)
                 {
                     Vector2 p1, p2;
@@ -481,7 +500,7 @@ namespace DxWinForm
                     p1.Y = (float)rand.NextDouble() * (maxy - miny) + miny;
                     p2.X = (float)rand.NextDouble() * (maxx - minx) + minx;
                     p2.Y = (float)rand.NextDouble() * (maxy - miny) + miny;
-                    ret.AddWall(dx_device, p1, p2);
+                    ret.AddWall(dx_device, p1, p2, boundary);
                 }
 
                 return ret;
