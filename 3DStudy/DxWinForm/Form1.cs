@@ -109,7 +109,7 @@ namespace DxWinForm
 
             Matrix matWorld, matView, matProj;
             matWorld = matView = matProj = Matrix.Identity;
-            matView = Matrix.LookAtLH(new Vector3(5, 5, -5), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
+            matView = Matrix.LookAtLH(new Vector3(5, 15, -5), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
             matProj = Matrix.PerspectiveFovLH((float)Math.PI / 4, 1.0f, 0.1f, 100.0f);
             dx_device.SetTransform(TransformType.World, matWorld);
             dx_device.SetTransform(TransformType.View, matView);
@@ -137,12 +137,9 @@ namespace DxWinForm
             dx_device.RenderState.AlphaBlendEnable = true;
             dx_device.RenderState.SourceBlend = Blend.Zero;
             dx_device.RenderState.DestinationBlend = Blend.One;
-            matWorld = Matrix.Zero;
-            matWorld.M11 = matWorld.M33 = matWorld.M44 = 1;
-            matWorld.M24 = -0.9f;
-            dx_device.Transform.World = matWorld;
-            m_Objects[4].render(dx_device);
-            dx_device.Transform.World = Matrix.Identity;
+
+            ((VertexBuffers.Walls)m_Objects[4]).RenderShadow(dx_device);
+
             // 원래 객체를 그린다.
             dx_device.RenderState.ShadeMode = ShadeMode.Gouraud;
             dx_device.RenderState.CullMode = Cull.None;
@@ -221,13 +218,13 @@ namespace DxWinForm
         public class DrawVertexBuffer : DrawItem
         {
             public VertexBuffer m_VB;
-            public int m_nVertices;
+            public int m_nPrimitives;
 
             public override void render(Device dx_device)
             {
                 dx_device.SetStreamSource(0, m_VB, 0);
                 dx_device.VertexFormat = m_VB.Description.VertexFormat;
-                dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, m_nVertices);
+                dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, m_nPrimitives);
             }
         }
 
@@ -238,7 +235,7 @@ namespace DxWinForm
                 m_VB = new VertexBuffer(typeof(CustomVertex.PositionTextured), 6, dx_device, Usage.WriteOnly, CustomVertex.PositionTextured.Format,
                     Pool.Default);
                 m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
-                m_nVertices = 2;
+                m_nPrimitives = 2;
                 OnCreateVertexBuffer(m_VB, null);
             }
 
@@ -303,7 +300,7 @@ namespace DxWinForm
                     CustomVertex.TransformedColored.Format,
                     Pool.Default);
 
-                m_nVertices = 2;
+                m_nPrimitives = 2;
 
                 m_VB.Created += new EventHandler(this.OnCreateBillBoard);
                 OnCreateBillBoard(m_VB, null);
@@ -316,7 +313,7 @@ namespace DxWinForm
             {
                 m_VB = new VertexBuffer(typeof(CustomVertex.PositionColored), 6, dx_device, Usage.WriteOnly, CustomVertex.PositionColored.Format,
                     Pool.Default);
-                m_nVertices = 2;
+                m_nPrimitives = 2;
                 m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
                 OnCreateVertexBuffer(m_VB, null);
             }
@@ -358,8 +355,9 @@ namespace DxWinForm
                 this.p2 = p2;
                 this.height = height;
                 m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
-                m_nVertices = 2;
+                m_nPrimitives = 2;
                 OnCreateVertexBuffer(m_VB, null);
+                shadow = new Shadow(dx_device, p1, p2);
             }
 
             public void OnCreateVertexBuffer(object sender, EventArgs e)
@@ -388,6 +386,59 @@ namespace DxWinForm
 
             private Vector2 p1, p2;
             private float height;
+            public Shadow shadow;
+
+            public class Shadow : DrawVertexBuffer
+            {
+                public void OnCreateVertexBuffer(Object sender, EventArgs e)
+                {
+                    CustomVertex.PositionOnly[] points = new CustomVertex.PositionOnly[4]
+                    {
+                        new CustomVertex.PositionOnly(ptrs[0].X, 0, ptrs[0].Y),
+                        new CustomVertex.PositionOnly(ptrs[1].X, 0, ptrs[1].Y),
+                        new CustomVertex.PositionOnly(ptrs[2].X, 0, ptrs[2].Y),
+                        new CustomVertex.PositionOnly(ptrs[3].X, 0, ptrs[3].Y),
+                    };
+
+                    CustomVertex.PositionOnly[] vertices = new CustomVertex.PositionOnly[6]
+                    {
+                        points[0],
+                        points[1],
+                        points[3],
+                        points[0],
+                        points[3],
+                        points[2],
+                    };
+
+                    VertexBuffer vb = (VertexBuffer)sender;
+                    vb.SetData((object)vertices, 0, LockFlags.None);
+                }
+
+                public Shadow(Device dx_device, Vector2 p1, Vector2 p2)
+                {
+                    Vector2 p1x = Vector2.Normalize(p1), p2x = Vector2.Normalize(p2);
+                    double angle1, angle2;
+                    angle1 = Math.Atan2(p1.Y, p1.X);
+                    angle2 = Math.Atan2(p2.Y, p1.X);
+                    if (angle2 < angle1) angle2 += Math.PI * 2.0;
+                    if (angle2 - angle1 > Math.PI)
+                    {
+                        double tmp = angle1; angle1 = angle2; angle2 = tmp;
+                    }
+                    p1x.Multiply(25);
+                    p2x.Multiply(25);
+
+                    ptrs = new Vector2[4] { p1, p2, p1x, p2x };
+
+                    m_nPrimitives = 2;
+                    m_VB = new VertexBuffer(typeof(CustomVertex.PositionOnly), 6, dx_device, Usage.WriteOnly, CustomVertex.PositionOnly.Format,
+                        Pool.Default);
+                    m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
+                    OnCreateVertexBuffer(m_VB, null);
+                }
+
+                Vector2[] ptrs;
+            }
         }
 
         public class Walls : DrawItem
@@ -408,6 +459,14 @@ namespace DxWinForm
                 foreach (Wall w in m_List)
                 {
                     w.render(dx_device);
+                }
+            }
+
+            public void RenderShadow(Device dx_device)
+            {
+                foreach (Wall w in m_List)
+                {
+                    w.shadow.render(dx_device);
                 }
             }
 
@@ -440,7 +499,7 @@ namespace DxWinForm
                 this.sx = sx;
                 this.sy = sy;
                 m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
-                m_nVertices = 2;
+                m_nPrimitives = 2;
                 OnCreateVertexBuffer(m_VB, null);
             }
 
