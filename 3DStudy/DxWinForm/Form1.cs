@@ -107,8 +107,8 @@ namespace DxWinForm
             dx_device.BeginScene();
             dx_device.SetTexture(0, m_Tex);
 
-            Matrix matWorld, matView, matProj;
             matWorld = matView = matProj = Matrix.Identity;
+            matWorld = m_position.getWorldMatrix();
             matView = Matrix.LookAtLH(new Vector3(5, 15, -5), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
             matProj = Matrix.PerspectiveFovLH((float)Math.PI / 4, 1.0f, 0.1f, 100.0f);
             dx_device.SetTransform(TransformType.World, matWorld);
@@ -184,6 +184,11 @@ namespace DxWinForm
             dx_device.RenderState.ZBufferWriteEnable = true;
             dx_device.RenderState.StencilEnable = false;
             dx_device.RenderState.AlphaBlendEnable = false;
+
+            FontDescription desc = new FontDescription();
+            Microsoft.DirectX.Direct3D.Font fnt = new Microsoft.DirectX.Direct3D.Font(dx_device, desc);            
+
+            fnt.DrawText(null, m_position.ToString(), new Point(5, 5), Color.White);
  
             dx_device.EndScene();
 
@@ -195,10 +200,12 @@ namespace DxWinForm
             Render1();
         }
 
+        public DxLib.플레이어위치 m_position = new DxLib.플레이어위치();
         private Device dx_device = null;
         private List<VertexBuffers.DrawItem> m_Objects = new List<VertexBuffers.DrawItem>();
         private Mesh m_Mesh = null;
         private Texture m_Tex = null;
+        public Matrix matWorld, matView, matProj;
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -357,7 +364,7 @@ namespace DxWinForm
                 m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
                 m_nPrimitives = 2;
                 OnCreateVertexBuffer(m_VB, null);
-                shadow = new Shadow(dx_device, p1, p2, boundary);
+                shadow = new Shadow(dx_device, p1, p2, (Vector2[]) boundary.Clone());
             }
 
             public void OnCreateVertexBuffer(object sender, EventArgs e)
