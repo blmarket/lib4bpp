@@ -13,6 +13,19 @@ namespace DxWinForm
 {
     public partial class Form1 : Form
     {
+        private void TrackCursor()
+        {
+            Point mousePt = PointToClient(Cursor.Position);
+            m_Cursor.m_Position.X = (float)mousePt.X;
+            m_Cursor.m_Position.Y = (float)mousePt.Y;
+        }
+
+        public void Idle()
+        {
+            TrackCursor();
+            Render1();
+        }
+        
         public Form1()
         {
             InitializeComponent();
@@ -100,7 +113,7 @@ namespace DxWinForm
             dx_device.Present();
         }
 
-        private void Render1()
+        public void Render1()
         {
             dx_device.Clear(ClearFlags.Target | ClearFlags.ZBuffer | ClearFlags.Stencil, Color.Blue, 1.0f, 0);
 
@@ -190,7 +203,7 @@ namespace DxWinForm
             FontDescription desc = new FontDescription();
             Microsoft.DirectX.Direct3D.Font fnt = new Microsoft.DirectX.Direct3D.Font(dx_device, desc);            
 
-            fnt.DrawText(null, m_position.ToString(), new Point(5, 5), Color.White);
+            fnt.DrawText(null, m_position.ToString() + "\n" + m_Cursor.ToString(), new Point(5, 5), Color.White);
  
             dx_device.EndScene();
 
@@ -203,6 +216,7 @@ namespace DxWinForm
         }
 
         public DxLib.플레이어위치 m_position = new DxLib.플레이어위치();
+        public DxLib.커서위치 m_Cursor = new DxLib.커서위치();
         private Device dx_device = null;
         private List<VertexBuffers.DrawItem> m_Objects = new List<VertexBuffers.DrawItem>();
         private Mesh m_Mesh = null;
@@ -235,7 +249,6 @@ namespace DxWinForm
                     m_position.pos.X -= value;
                     break;
             }
-            Render1();
         }
     }
 

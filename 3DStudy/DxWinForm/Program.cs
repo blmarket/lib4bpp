@@ -15,7 +15,16 @@ namespace DxWinForm
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            m_Form = new Form1();
+            Application.Idle += new EventHandler(Application_Idle);
+            Application.Run(m_Form);
         }
+
+        static void Application_Idle(object sender, EventArgs e)
+        {
+            m_Form.Idle();
+        }
+
+        private static Form1 m_Form = null;
     }
 }
