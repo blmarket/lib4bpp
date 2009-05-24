@@ -19,6 +19,15 @@ namespace DxLib
             return Matrix.Translation(pos.X,0,pos.Y);
         }
 
+        public Matrix getShadowWorldMatrix()
+        {
+            Matrix shadow = Matrix.Identity;
+            shadow.M22 = 0;
+            shadow.M24 = -0.999f;
+
+            return Matrix.Translation(pos.X, 0, pos.Y) * shadow;
+        }
+
         public override string ToString()
         {
             return base.ToString() + "\nX : " + pos.X + " Y : " + pos.Y;

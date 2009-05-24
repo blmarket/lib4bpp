@@ -32,7 +32,7 @@ namespace DxWinForm
             VertexBuffers.ShadowFullScreen shadows = new VertexBuffers.ShadowFullScreen(dx_device, 500, 500);
             m_Objects.Add(shadows);
 
-            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 2, -3, 3, -3, 3);
+            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 5, -3, 3, -3, 3);
             m_Objects.Add(walls);            
 
             m_Mesh = Mesh.Teapot(dx_device);
@@ -138,7 +138,9 @@ namespace DxWinForm
             dx_device.RenderState.SourceBlend = Blend.Zero;
             dx_device.RenderState.DestinationBlend = Blend.One;
 
-            ((VertexBuffers.Walls)m_Objects[4]).RenderShadow(dx_device);
+            dx_device.Transform.World = m_position.getShadowWorldMatrix();
+            m_Objects[4].render(dx_device);
+            dx_device.Transform.World = m_position.getWorldMatrix();
 
             // 원래 객체를 그린다.
             dx_device.RenderState.ShadeMode = ShadeMode.Gouraud;
@@ -212,6 +214,28 @@ namespace DxWinForm
             if(m_Tex != null) m_Tex.Dispose();
             m_Mesh.Dispose();           
             dx_device.Dispose();
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            float value = 1.0f;
+            if (e.Control) value *= 10;
+            switch (e.KeyCode)
+            {
+                case Keys.Up:
+                    m_position.pos.Y -= value;
+                    break;
+                case Keys.Down:
+                    m_position.pos.Y += value;
+                    break;
+                case Keys.Left:
+                    m_position.pos.X += value;
+                    break;
+                case Keys.Right:
+                    m_position.pos.X -= value;
+                    break;
+            }
+            Render1();
         }
     }
 
@@ -364,7 +388,6 @@ namespace DxWinForm
                 m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
                 m_nPrimitives = 2;
                 OnCreateVertexBuffer(m_VB, null);
-                shadow = new Shadow(dx_device, p1, p2, (Vector2[]) boundary.Clone());
             }
 
             public void OnCreateVertexBuffer(object sender, EventArgs e)
@@ -393,71 +416,6 @@ namespace DxWinForm
 
             private Vector2 p1, p2;
             private float height;
-            public Shadow shadow;
-
-            public class Shadow : DrawItem
-            {
-                public Vector2 GetPoint(double angle)
-                {
-                    return new Vector2((float)(25.0 * Math.Cos(angle)), (float)(25.0 * Math.Sin(angle)));
-                }
-
-                public Shadow(Device dx_device, Vector2 p1, Vector2 p2, Vector2[] boundary)
-                {
-                    double angle1, angle2;
-                    angle1 = Math.Atan2(p1.Y, p1.X);
-                    angle2 = Math.Atan2(p2.Y, p2.X);
-                    if (angle2 < angle1) angle2 += Math.PI * 2.0;
-                    if (angle2 - angle1 > Math.PI)
-                    {
-                        double tmp = angle1; angle1 = angle2; angle2 = tmp;
-                        Vector2 tmpp = p1; p1 = p2; p2 = tmpp;
-                    }
-
-                    List<Vector2> ptrs = new List<Vector2>();
-                    ptrs.Add(p1);
-                    ptrs.Add(GetPoint(angle1));
-                    foreach (Vector2 vec in boundary.OrderBy(Vector2 => Math.Atan2(Vector2.Y, Vector2.X)))
-                    {
-                        double angle = Math.Atan2(vec.Y, vec.X);
-                        while (angle < angle1) angle += Math.PI * 2.0;
-                        if (angle < angle2)
-                        {
-                            ptrs.Add(vec);
-                        }
-                    }
-
-                    ptrs.Add(GetPoint(angle2));
-                    ptrs.Add(p2);
-
-                    points = new CustomVertex.PositionOnly[ptrs.Count];
-                    for (int i = 0; i < ptrs.Count; i++)
-                    {
-                        points[i] = new CustomVertex.PositionOnly(ptrs[i].X, 0, ptrs[i].Y);
-                    }
-
-                    m_VB = new VertexBuffer(typeof(CustomVertex.PositionOnly), points.Count(), dx_device, Usage.WriteOnly, CustomVertex.PositionOnly.Format,
-                        Pool.Default);
-                    m_VB.Created += new EventHandler(this.OnCreateVertexBuffer);
-                    OnCreateVertexBuffer(m_VB, null);
-                }
-
-                public void OnCreateVertexBuffer(Object sender, EventArgs e)
-                {
-                    VertexBuffer vb = (VertexBuffer)sender;
-                    vb.SetData((object)points, 0, LockFlags.None);
-                }
-
-                public override void render(Device dx_device)
-                {
-                    dx_device.SetStreamSource(0, m_VB, 0);
-                    dx_device.VertexFormat = m_VB.Description.VertexFormat;
-                    dx_device.DrawPrimitives(PrimitiveType.TriangleFan, 0, points.Count() - 2);
-                }
-
-                CustomVertex.PositionOnly[] points;
-                VertexBuffer m_VB;
-            }
         }
 
         public class Walls : DrawItem
@@ -478,14 +436,6 @@ namespace DxWinForm
                 foreach (Wall w in m_List)
                 {
                     w.render(dx_device);
-                }
-            }
-
-            public void RenderShadow(Device dx_device)
-            {
-                foreach (Wall w in m_List)
-                {
-                    w.shadow.render(dx_device);
                 }
             }
 
