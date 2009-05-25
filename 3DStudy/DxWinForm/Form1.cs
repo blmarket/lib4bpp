@@ -15,9 +15,8 @@ namespace DxWinForm
     {
         private void TrackCursor()
         {
-            Point mousePt = PointToClient(Cursor.Position);
-            m_Cursor.m_Position.X = (float)mousePt.X;
-            m_Cursor.m_Position.Y = (float)mousePt.Y;
+            m_Cursor.m_MousePoint = PointToClient(Cursor.Position);
+            m_Cursor.m_ClientRectangle = ClientRectangle;
         }
 
         public void Idle()
@@ -201,7 +200,7 @@ namespace DxWinForm
 
             fnt.DrawText(null, m_Camera.ToString() + "\n" 
                 + m_Cursor.ToString() + "\n" 
-                + m_Camera.getPIcking(m_Cursor.m_Position), new Point(5, 5), Color.White);
+                + m_Camera.getPicking(m_Cursor.m_MousePoint, m_Cursor.m_ClientRectangle), new Point(5, 5), Color.White);
  
             dx_device.EndScene();
 

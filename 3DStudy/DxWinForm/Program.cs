@@ -23,6 +23,8 @@ namespace DxWinForm
         static void Application_Idle(object sender, EventArgs e)
         {
             m_Form.Idle();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
 
         private static Form1 m_Form = null;

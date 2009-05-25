@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 
@@ -14,23 +15,21 @@ namespace DxLib
             return base.ToString() + "(" + m_Position.ToString() + ")";
         }
 
-        public string getPIcking(Vector2 pos)
+        public string getPicking(Point pos, Rectangle rt)
         {
-            Vector4 vec1 = new Vector4(pos.X, pos.Y, 0.1f, 1.0f);
-            Vector4 vec2 = new Vector4(pos.X, pos.Y, 100.0f, 1.0f);
-            Matrix ViewProjection = m_View * m_Projection;
-            Matrix invViewProjection = Matrix.Invert(m_View * m_Projection);
-            vec1.Transform(invViewProjection);
-            vec1.Scale(1.0f / vec1.W);
-            vec2.Transform(invViewProjection);
-            vec2.Scale(1.0f / vec2.W);
-            Vector2 vec3 = new Vector2();
-            float zdiff = vec2.Z - vec1.Z;
-            float xdiff = vec2.X - vec1.X;
-            float ydiff = vec2.Y - vec1.Y;
-            vec3.X = vec1.X - (xdiff / zdiff) * vec1.Z;
-            vec3.Y = vec1.Y - (ydiff / zdiff) * vec1.Z;
-            return vec1.ToString() + vec2 + vec3;
+            Vector3 v = new Vector3(0, 0, 1);
+            v.X = (((((pos.X - rt.Left) * 2.0f / rt.Right) - 1.0f)) - m_Projection.M31) / m_Projection.M11;
+            v.Y = ((-(((pos.Y - rt.Top) * 2.0f / rt.Bottom) - 1.0f)) - m_Projection.M32) / m_Projection.M22;
+            Matrix inv = Matrix.Invert(m_View);
+
+            Vector3 orig, dir;
+            orig = new Vector3(inv.M41, inv.M42, inv.M43);
+            dir = new Vector3(
+                v.X * inv.M11 + v.Y * inv.M21 + v.Z * inv.M31,
+                v.X * inv.M12 + v.Y * inv.M22 + v.Z * inv.M32,
+                v.X * inv.M13 + v.Y * inv.M23 + v.Z * inv.M33);
+
+            return v.ToString() + orig + dir;
         }
 
         public 카메라()

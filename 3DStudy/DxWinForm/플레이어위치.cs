@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Drawing;
 using System.Text;
 using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX;
@@ -40,11 +41,12 @@ namespace DxLib
     {
         public 커서위치() { }
 
-        public Vector2 m_Position = new Vector2();
+        public Point m_MousePoint;
+        public Rectangle m_ClientRectangle;
 
         public override string ToString()
         {
-            return base.ToString() + " X : " + m_Position.X + " Y : " + m_Position.Y;
+            return base.ToString() + " X : " + m_MousePoint.X + " Y : " + m_MousePoint.Y;
         }
     }
 }
