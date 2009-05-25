@@ -120,13 +120,9 @@ namespace DxWinForm
             dx_device.BeginScene();
             dx_device.SetTexture(0, m_Tex);
 
-            matWorld = matView = matProj = Matrix.Identity;
-            matWorld = m_position.getWorldMatrix();
-            matView = Matrix.LookAtLH(new Vector3(5, 15, -5), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
-            matProj = Matrix.PerspectiveFovLH((float)Math.PI / 4, 1.0f, 0.1f, 100.0f);
-            dx_device.SetTransform(TransformType.World, matWorld);
-            dx_device.SetTransform(TransformType.View, matView);
-            dx_device.SetTransform(TransformType.Projection, matProj);
+            dx_device.SetTransform(TransformType.World, m_Camera.m_World);
+            dx_device.SetTransform(TransformType.View, m_Camera.m_View);
+            dx_device.SetTransform(TransformType.Projection, m_Camera.m_Projection);
 
             // 원래 객체를 그린다.
             dx_device.RenderState.ShadeMode = ShadeMode.Gouraud;
@@ -151,9 +147,9 @@ namespace DxWinForm
             dx_device.RenderState.SourceBlend = Blend.Zero;
             dx_device.RenderState.DestinationBlend = Blend.One;
 
-            dx_device.Transform.World = m_position.getShadowWorldMatrix();
+            dx_device.Transform.World = m_Camera.m_ShadowWorld;
             m_Objects[4].render(dx_device);
-            dx_device.Transform.World = m_position.getWorldMatrix();
+            dx_device.Transform.World = m_Camera.m_World;
 
             // 원래 객체를 그린다.
             dx_device.RenderState.ShadeMode = ShadeMode.Gouraud;
@@ -203,7 +199,9 @@ namespace DxWinForm
             FontDescription desc = new FontDescription();
             Microsoft.DirectX.Direct3D.Font fnt = new Microsoft.DirectX.Direct3D.Font(dx_device, desc);            
 
-            fnt.DrawText(null, m_position.ToString() + "\n" + m_Cursor.ToString(), new Point(5, 5), Color.White);
+            fnt.DrawText(null, m_Camera.ToString() + "\n" 
+                + m_Cursor.ToString() + "\n" 
+                + m_Camera.getPIcking(m_Cursor.m_Position), new Point(5, 5), Color.White);
  
             dx_device.EndScene();
 
@@ -215,13 +213,12 @@ namespace DxWinForm
             Render1();
         }
 
-        public DxLib.플레이어위치 m_position = new DxLib.플레이어위치();
+        public DxLib.카메라 m_Camera = new DxLib.카메라();
         public DxLib.커서위치 m_Cursor = new DxLib.커서위치();
         private Device dx_device = null;
         private List<VertexBuffers.DrawItem> m_Objects = new List<VertexBuffers.DrawItem>();
         private Mesh m_Mesh = null;
         private Texture m_Tex = null;
-        public Matrix matWorld, matView, matProj;
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -237,16 +234,16 @@ namespace DxWinForm
             switch (e.KeyCode)
             {
                 case Keys.Up:
-                    m_position.pos.Y -= value;
+                    m_Camera.m_Position.pos.Y -= value;
                     break;
                 case Keys.Down:
-                    m_position.pos.Y += value;
+                    m_Camera.m_Position.pos.Y += value;
                     break;
                 case Keys.Left:
-                    m_position.pos.X += value;
+                    m_Camera.m_Position.pos.X += value;
                     break;
                 case Keys.Right:
-                    m_position.pos.X -= value;
+                    m_Camera.m_Position.pos.X -= value;
                     break;
             }
         }
