@@ -50,7 +50,7 @@ namespace DxWinForm
             m_Objects.Add(shadows);
 
             VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 5, -3, 3, -3, 3);
-            m_Objects.Add(walls);            
+            m_Objects.Add(walls); // m_Objects[4]
 
             m_Mesh = Mesh.Teapot(dx_device);
             Bitmap Bits = new Bitmap(512,512);
@@ -204,8 +204,8 @@ namespace DxWinForm
             Microsoft.DirectX.Direct3D.Font fnt = new Microsoft.DirectX.Direct3D.Font(dx_device, desc);            
 
             fnt.DrawText(null, m_Camera.ToString() + "\n" 
-                + m_Cursor.ToString() + "\n" 
-                + m_Camera.getPicking(m_Cursor.m_MousePoint, dx_device.Viewport), new Point(5, 5), Color.White);
+                + ((VertexBuffers.Walls)m_Objects[4]).m_shadow + "\n"
+                + m_Camera.getPicking(m_Cursor.m_MousePoint, dx_device.Viewport), new Point(5, 5), Color.Aquamarine);
 
             fnt.Dispose();
 
@@ -226,6 +226,7 @@ namespace DxWinForm
         private Mesh m_Mesh = null;
         private Texture m_Tex = null;
         private Boolean m_Rbuttondown = false;
+        private DxLib.Shadow m_shadow = new DxLib.Shadow();
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -483,6 +484,7 @@ namespace DxWinForm
                     new Vector2(maxx,miny),
                     new Vector2(maxx,maxy),
                 };
+
                 for (int i = 0; i < cnt; i++)
                 {
                     Vector2 p1, p2;
@@ -491,11 +493,13 @@ namespace DxWinForm
                     p2.X = (float)rand.NextDouble() * (maxx - minx) + minx;
                     p2.Y = (float)rand.NextDouble() * (maxy - miny) + miny;
                     ret.AddWall(dx_device, p1, p2, boundary);
+                    ret.m_shadow.AddWall(p1, p2);
                 }
 
                 return ret;
             }
 
+            public DxLib.Shadow m_shadow = new DxLib.Shadow();
             private List<Wall> m_List = new List<Wall>();
         }
 
