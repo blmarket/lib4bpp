@@ -12,7 +12,6 @@ namespace DxLib
     {
         public 플레이어위치()
         {
-            pos.X = 3.0f;
         }
 
         public Matrix getWorldMatrix()

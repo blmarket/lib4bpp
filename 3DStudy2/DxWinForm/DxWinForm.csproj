@@ -80,6 +80,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Shadow.cs" />
     <Compile Include="카메라.cs" />
     <Compile Include="플레이어위치.cs" />
   </ItemGroup>
