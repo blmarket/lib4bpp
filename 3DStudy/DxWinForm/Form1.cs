@@ -23,6 +23,11 @@ namespace DxWinForm
         {
             TrackCursor();
             Render1();
+            if (m_Rbuttondown)
+            {
+                Vector2 move = m_Camera.getPicking(m_Cursor.m_MousePoint, dx_device.Viewport);
+                m_Camera.m_Position.pos -= Vector2.Scale(move, 0.01f);
+            }
         }
         
         public Form1()
@@ -202,6 +207,8 @@ namespace DxWinForm
                 + m_Cursor.ToString() + "\n" 
                 + m_Camera.getPicking(m_Cursor.m_MousePoint, dx_device.Viewport), new Point(5, 5), Color.White);
 
+            fnt.Dispose();
+
             dx_device.EndScene();
 
             dx_device.Present();
@@ -218,6 +225,7 @@ namespace DxWinForm
         private List<VertexBuffers.DrawItem> m_Objects = new List<VertexBuffers.DrawItem>();
         private Mesh m_Mesh = null;
         private Texture m_Tex = null;
+        private Boolean m_Rbuttondown = false;
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -244,6 +252,22 @@ namespace DxWinForm
                 case Keys.Right:
                     m_Camera.m_Position.pos.X -= value;
                     break;
+            }
+        }
+
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                m_Rbuttondown = true;
+            }
+        }
+
+        private void Form1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                m_Rbuttondown = false;
             }
         }
     }

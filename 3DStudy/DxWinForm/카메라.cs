@@ -15,17 +15,17 @@ namespace DxLib
             return base.ToString() + "(" + m_Position.ToString() + ")";
         }
 
-        public string getPicking(Point pos, Viewport Viewport)
+        public Vector2 getPicking(Point pos, Viewport Viewport)
         {
             Vector3 v1 = new Vector3(pos.X, pos.Y, 1);
             Vector3 v2 = new Vector3(pos.X, pos.Y, 0);
-            v1.Unproject(Viewport, m_Projection, m_View, m_Position.getWorldMatrix());
-            v2.Unproject(Viewport, m_Projection, m_View, m_Position.getWorldMatrix());
+            v1.Unproject(Viewport, m_Projection, m_View, Matrix.Identity);
+            v2.Unproject(Viewport, m_Projection, m_View, Matrix.Identity);
             Vector3 v3 = v2 - v1;
             v3.Scale(1.0f/v3.Y);
-            Vector3 v4 = v1 - v3 * v1.Y;
+            Vector3 v4 = v1 - v3 * v1.Y; // Y 값이 0이 되는 방정식 계산.
 
-            return "" + v1 + v3 + v4;
+            return new Vector2(v4.X, v4.Z);
         }
 
         public 카메라()
