@@ -200,8 +200,8 @@ namespace DxWinForm
 
             fnt.DrawText(null, m_Camera.ToString() + "\n" 
                 + m_Cursor.ToString() + "\n" 
-                + m_Camera.getPicking(m_Cursor.m_MousePoint, m_Cursor.m_ClientRectangle), new Point(5, 5), Color.White);
- 
+                + m_Camera.getPicking(m_Cursor.m_MousePoint, dx_device.Viewport), new Point(5, 5), Color.White);
+
             dx_device.EndScene();
 
             dx_device.Present();

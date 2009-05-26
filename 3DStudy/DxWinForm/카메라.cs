@@ -15,21 +15,17 @@ namespace DxLib
             return base.ToString() + "(" + m_Position.ToString() + ")";
         }
 
-        public string getPicking(Point pos, Rectangle rt)
+        public string getPicking(Point pos, Viewport Viewport)
         {
-            Vector3 v = new Vector3(0, 0, 1);
-            v.X = (((((pos.X - rt.Left) * 2.0f / rt.Right) - 1.0f)) - m_Projection.M31) / m_Projection.M11;
-            v.Y = ((-(((pos.Y - rt.Top) * 2.0f / rt.Bottom) - 1.0f)) - m_Projection.M32) / m_Projection.M22;
-            Matrix inv = Matrix.Invert(m_View);
+            Vector3 v1 = new Vector3(pos.X, pos.Y, 1);
+            Vector3 v2 = new Vector3(pos.X, pos.Y, 0);
+            v1.Unproject(Viewport, m_Projection, m_View, m_Position.getWorldMatrix());
+            v2.Unproject(Viewport, m_Projection, m_View, m_Position.getWorldMatrix());
+            Vector3 v3 = v2 - v1;
+            v3.Scale(1.0f/v3.Y);
+            Vector3 v4 = v1 - v3 * v1.Y;
 
-            Vector3 orig, dir;
-            orig = new Vector3(inv.M41, inv.M42, inv.M43);
-            dir = new Vector3(
-                v.X * inv.M11 + v.Y * inv.M21 + v.Z * inv.M31,
-                v.X * inv.M12 + v.Y * inv.M22 + v.Z * inv.M32,
-                v.X * inv.M13 + v.Y * inv.M23 + v.Z * inv.M33);
-
-            return v.ToString() + orig + dir;
+            return "" + v1 + v3 + v4;
         }
 
         public 카메라()
