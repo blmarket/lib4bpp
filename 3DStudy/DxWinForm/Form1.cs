@@ -205,7 +205,10 @@ namespace DxWinForm
 
             fnt.DrawText(null, m_Camera.ToString() + "\n" 
                 + m_Cursor.ToString() + "\n" 
-                + m_Camera.getPicking(m_Cursor.m_MousePoint, dx_device.Viewport), new Point(5, 5), Color.White);
+                + m_Camera.getPicking(m_Cursor.m_MousePoint, dx_device.Viewport) + "\n"
+                + m_Count, new Point(5, 5), Color.White);
+
+            m_Count = (m_Count + 1) % 10000;
 
             fnt.Dispose();
 
@@ -226,6 +229,7 @@ namespace DxWinForm
         private Mesh m_Mesh = null;
         private Texture m_Tex = null;
         private Boolean m_Rbuttondown = false;
+        private int m_Count = 0;
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
