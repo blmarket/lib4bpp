@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Drawing;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
 
@@ -18,6 +19,22 @@ namespace DxLib
                 angle = a;
             }
 
+            public float x 
+            { 
+                get 
+                {
+                    return (float)Math.Cos(angle) * dist;
+                }
+            }
+
+            public float y
+            {
+                get 
+                {
+                    return (float)Math.Sin(angle) * dist;
+                }
+            }
+
             public int wallid; // 실제 wall의 element 번호? 쯤이라고 생각해.
             public float dist; // wall이 존재하는 거리
             public float angle; // wall의 각도            
@@ -28,7 +45,7 @@ namespace DxLib
             }
         }
 
-        public List<Wall> m_Walls = new List<Wall>();
+        public List<Wall[]> m_Walls = new List<Wall[]>();
 
         public Shadow()
         {
@@ -53,12 +70,11 @@ namespace DxLib
 
         void addit(float d1, float a1, float d2, float a2)
         {
-            Wall w1,w2;
-            w1 = new Wall(0,d1,a1);
-            w2 = new Wall(0,d2,a2);
+            Wall[] Walls = new Wall[2];
+            Walls[0] = new Wall(0,d1,a1);
+            Walls[1] = new Wall(0,d2,a2);
 
-            m_Walls.Add(w1);
-            m_Walls.Add(w2);
+            m_Walls.Add(Walls);
         }
 
         float getinetersecty0(Vector2 p1, Vector2 p2)
@@ -86,6 +102,10 @@ namespace DxLib
                 addit(tmp, 0.0f, p2.Length(), (float)angle2);
                 addit(p1.Length(), (float)angle1, tmp, (float)Math.PI * 2.0f);
             }
+            else
+            {
+                addit(p1.Length(), (float)angle1, p2.Length(), (float)angle2);
+            }
         }
 
         public override string ToString()
@@ -96,6 +116,75 @@ namespace DxLib
                 ret += m_Walls[i].ToString() + "\n";
             }
             return base.ToString() + ret;
+        }
+
+        private VertexBuffer m_VB = null;
+        public int m_VertexCount = 0;
+
+        public VertexBuffer BuildShadowVertex(Device dx_device)
+        {
+            int vc = 0;
+            foreach (Wall[] w in m_Walls)
+            {
+                for (int i = 0; i < w.Count() - 1; i++)
+                {
+                    vc += 2;
+                }
+            }
+
+            if (m_VB != null) m_VB.Dispose();
+            m_VB = new VertexBuffer(typeof(CustomVertex.PositionColored), vc * 3, dx_device, Usage.None,
+                CustomVertex.PositionColored.Format, Pool.Managed);
+
+            m_VertexCount = vc * 3;
+
+            CustomVertex.PositionColored[] array = (CustomVertex.PositionColored[])m_VB.Lock(0, LockFlags.None);
+
+            for (int i = 0; i < vc * 3; i++)
+                array[i].Color = Color.Black.ToArgb();
+
+            vc = 0;
+            foreach (Wall[] w in m_Walls)
+            {
+                for (int i = 0; i < w.Count() - 1; i++)
+                {
+                    Wall tmp = w[i], tmp2 = w[i + 1];
+                    tmp.dist += 25;
+                    tmp2.dist += 25;
+
+                    array[vc].X = w[i].x;
+                    array[vc].Y = 0;
+                    array[vc].Z = w[i].y;
+                    vc++;
+
+                    array[vc].X = w[i+1].x;
+                    array[vc].Y = 0;
+                    array[vc].Z = w[i+1].y;
+                    vc++;
+
+                    array[vc].X = tmp.x;
+                    array[vc].Y = 0;
+                    array[vc].Z = tmp.y;
+                    vc++;
+
+                    array[vc].X = w[i].x;
+                    array[vc].Y = 0;
+                    array[vc].Z = w[i].y;
+                    vc++;
+
+                    array[vc].X = tmp2.x;
+                    array[vc].Y = 0;
+                    array[vc].Z = tmp2.y;
+                    vc++;
+
+                    array[vc].X = tmp.x;
+                    array[vc].Y = 0;
+                    array[vc].Z = tmp.y;
+                    vc++;
+                }
+            }
+            m_VB.Unlock();
+            return m_VB;
         }
     }
 }

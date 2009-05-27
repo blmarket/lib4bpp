@@ -32,7 +32,7 @@ namespace DxLib
         {
             m_View = Matrix.LookAtLH(new Vector3(5, 15, -5), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
             m_Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4, 1.0f, 0.1f, 100.0f);
-            m_Projection = Matrix.OrthoLH(5, 5, 0.1f, 100.0f);
+            m_Projection = Matrix.OrthoLH(8, 8, 0.1f, 100.0f);
         }
 
         public Matrix m_World

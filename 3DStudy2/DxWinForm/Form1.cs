@@ -152,7 +152,7 @@ namespace DxWinForm
             dx_device.RenderState.DestinationBlend = Blend.One;
 
             dx_device.Transform.World = m_Camera.m_ShadowWorld;
-            m_Objects[4].render(dx_device);
+//            m_Objects[4].render(dx_device);
             dx_device.Transform.World = m_Camera.m_World;
 
             // 원래 객체를 그린다.
@@ -161,10 +161,14 @@ namespace DxWinForm
             dx_device.RenderState.ZBufferWriteEnable = true;
             dx_device.RenderState.StencilEnable = false;
             dx_device.RenderState.AlphaBlendEnable = false;
-            m_Objects[0].render(dx_device);
+//            m_Objects[0].render(dx_device);
             m_Objects[1].render(dx_device);
             m_Objects[4].render(dx_device);
 
+            VertexBuffer tmp = ((VertexBuffers.Walls)m_Objects[4]).m_shadow.BuildShadowVertex(dx_device);
+            dx_device.SetStreamSource(0, tmp, 0);
+            dx_device.VertexFormat = tmp.Description.VertexFormat;
+            dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, ((VertexBuffers.Walls)m_Objects[4]).m_shadow.m_VertexCount);
 
             // 그림자에 해당하는 부분을 다시 그린다.
             dx_device.RenderState.ZBufferEnable = true;
@@ -185,7 +189,7 @@ namespace DxWinForm
             dx_device.RenderState.StencilFunction = Compare.LessEqual;
             dx_device.RenderState.StencilPass = StencilOperation.Keep;
 
-            m_Objects[0].render(dx_device);
+//            m_Objects[0].render(dx_device);
 
             dx_device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
             dx_device.TextureState[0].ColorArgument2 = TextureArgument.Diffuse;
@@ -226,7 +230,6 @@ namespace DxWinForm
         private Mesh m_Mesh = null;
         private Texture m_Tex = null;
         private Boolean m_Rbuttondown = false;
-        private DxLib.Shadow m_shadow = new DxLib.Shadow();
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
