@@ -49,7 +49,7 @@ namespace DxWinForm
             VertexBuffers.ShadowFullScreen shadows = new VertexBuffers.ShadowFullScreen(dx_device, 500, 500);
             m_Objects.Add(shadows);
 
-            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 5, -3, 3, -3, 3);
+            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 1, -3, 3, -3, 3);
             m_Objects.Add(walls); // m_Objects[4]
 
             m_Mesh = Mesh.Teapot(dx_device);
@@ -151,9 +151,13 @@ namespace DxWinForm
             dx_device.RenderState.SourceBlend = Blend.Zero;
             dx_device.RenderState.DestinationBlend = Blend.One;
 
-            dx_device.Transform.World = m_Camera.m_ShadowWorld;
+//            dx_device.Transform.World = m_Camera.m_ShadowWorld;
 //            m_Objects[4].render(dx_device);
-            dx_device.Transform.World = m_Camera.m_World;
+//            dx_device.Transform.World = m_Camera.m_World;
+            VertexBuffer tmp = ((VertexBuffers.Walls)m_Objects[4]).m_shadow.BuildShadowVertex(dx_device);
+            dx_device.SetStreamSource(0, tmp, 0);
+            dx_device.VertexFormat = tmp.Description.VertexFormat;
+            dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, ((VertexBuffers.Walls)m_Objects[4]).m_shadow.m_VertexCount / 3);
 
             // 원래 객체를 그린다.
             dx_device.RenderState.ShadeMode = ShadeMode.Gouraud;
@@ -161,14 +165,9 @@ namespace DxWinForm
             dx_device.RenderState.ZBufferWriteEnable = true;
             dx_device.RenderState.StencilEnable = false;
             dx_device.RenderState.AlphaBlendEnable = false;
-//            m_Objects[0].render(dx_device);
+            m_Objects[0].render(dx_device);
             m_Objects[1].render(dx_device);
             m_Objects[4].render(dx_device);
-
-            VertexBuffer tmp = ((VertexBuffers.Walls)m_Objects[4]).m_shadow.BuildShadowVertex(dx_device);
-            dx_device.SetStreamSource(0, tmp, 0);
-            dx_device.VertexFormat = tmp.Description.VertexFormat;
-            dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, ((VertexBuffers.Walls)m_Objects[4]).m_shadow.m_VertexCount);
 
             // 그림자에 해당하는 부분을 다시 그린다.
             dx_device.RenderState.ZBufferEnable = true;
@@ -189,7 +188,7 @@ namespace DxWinForm
             dx_device.RenderState.StencilFunction = Compare.LessEqual;
             dx_device.RenderState.StencilPass = StencilOperation.Keep;
 
-//            m_Objects[0].render(dx_device);
+            m_Objects[0].render(dx_device);
 
             dx_device.TextureState[0].ColorArgument1 = TextureArgument.TextureColor;
             dx_device.TextureState[0].ColorArgument2 = TextureArgument.Diffuse;
@@ -256,6 +255,12 @@ namespace DxWinForm
                 case Keys.Right:
                     m_Camera.m_Position.pos.X -= value;
                     break;
+                case Keys.R:
+                    {
+                        VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 1, -3, 3, -3, 3);
+                        m_Objects[4] = walls; // m_Objects[4]
+                        break;
+                    }
             }
         }
 

@@ -70,9 +70,37 @@ namespace DxLib
 
         void addit(float d1, float a1, float d2, float a2)
         {
-            Wall[] Walls = new Wall[2];
-            Walls[0] = new Wall(0,d1,a1);
-            Walls[1] = new Wall(0,d2,a2);
+            Vector2[] Boundary = new Vector2[4] {
+                new Vector2(3,3),
+                new Vector2(-3,3),
+                new Vector2(-3,-3),
+                new Vector2(3,-3),
+            };
+
+            int cnt = 2;
+            for (int i = 0; i < 4; i++)
+            {
+                float angle = (float)Math.Atan2(Boundary[i].Y, Boundary[i].X);
+                if (a1 < angle && angle < a2)
+                {
+                    cnt++;
+                }
+            }
+
+            Wall[] Walls = new Wall[cnt];
+            Walls[0] = new Wall(0, d1, a1);
+            Walls[cnt-1] = new Wall(0, d2, a2);
+            cnt=1;
+            for (int i = 0; i < 4; i++)
+            {
+                float angle = (float)Math.Atan2(Boundary[i].Y, Boundary[i].X);
+                if (a1 < angle && angle < a2)
+                {
+                    float dist = getdistforangle(Walls[0], Walls[Walls.Count()-1], angle);
+                    Walls[cnt] = new Wall(0, dist, angle);
+                    cnt++;
+                }
+            }
 
             m_Walls.Add(Walls);
         }
@@ -86,7 +114,7 @@ namespace DxLib
         {
             double angle1, angle2;
             angle1 = Math.Atan2(p1.Y, p1.X);
-            angle2 = Math.Atan2(p2.Y, p1.Y);
+            angle2 = Math.Atan2(p2.Y, p2.X);
             double adiff = angle2 - angle1;
             if (adiff < 0) adiff += Math.PI * 2.0;
             if (adiff > Math.PI)
@@ -167,9 +195,9 @@ namespace DxLib
                     array[vc].Z = tmp.y;
                     vc++;
 
-                    array[vc].X = w[i].x;
+                    array[vc].X = w[i+1].x;
                     array[vc].Y = 0;
-                    array[vc].Z = w[i].y;
+                    array[vc].Z = w[i+1].y;
                     vc++;
 
                     array[vc].X = tmp2.x;
