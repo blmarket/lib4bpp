@@ -154,7 +154,7 @@ namespace DxWinForm
 //            dx_device.Transform.World = m_Camera.m_ShadowWorld;
 //            m_Objects[4].render(dx_device);
 //            dx_device.Transform.World = m_Camera.m_World;
-            VertexBuffer tmp = ((VertexBuffers.Walls)m_Objects[4]).m_shadow.BuildShadowVertex(dx_device);
+            VertexBuffer tmp = ((VertexBuffers.Walls)m_Objects[4]).m_shadow.BuildShadowVertex(dx_device, m_Camera.m_Position.pos);
             dx_device.SetStreamSource(0, tmp, 0);
             dx_device.VertexFormat = tmp.Description.VertexFormat;
             dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, ((VertexBuffers.Walls)m_Objects[4]).m_shadow.m_VertexCount / 3);
@@ -203,7 +203,7 @@ namespace DxWinForm
             dx_device.RenderState.StencilEnable = false;
             dx_device.RenderState.AlphaBlendEnable = false;
 
-            FontDescription desc = new FontDescription();
+            FontDescription desc = new Microsoft.DirectX.Direct3D.FontDescription();
             Microsoft.DirectX.Direct3D.Font fnt = new Microsoft.DirectX.Direct3D.Font(dx_device, desc);            
 
             fnt.DrawText(null, m_Camera.ToString() + "\n" 
@@ -507,7 +507,7 @@ namespace DxWinForm
                 return ret;
             }
 
-            public DxLib.Shadow m_shadow = new DxLib.Shadow();
+            public DxLib.Shadow2 m_shadow = new DxLib.Shadow2();
             private List<Wall> m_List = new List<Wall>();
         }
 

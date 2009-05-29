@@ -2,52 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Drawing;
 using Microsoft.DirectX;
 using Microsoft.DirectX.Direct3D;
+using System.Drawing;
+using DxLib.Geometry2D;
 
 namespace DxLib
 {
-    public class Shadow
+    public class Shadow2
     {
-        public struct Wall
-        {
-            public Wall(int wd, float d, float a)
-            {
-                wallid = wd;
-                dist = d;
-                angle = a;
-            }
+        public List<Vector2[]> m_Walls = new List<Vector2[]>();
 
-            public float x 
-            { 
-                get 
-                {
-                    return (float)Math.Cos(angle) * dist;
-                }
-            }
-
-            public float y
-            {
-                get 
-                {
-                    return (float)Math.Sin(angle) * dist;
-                }
-            }
-
-            public int wallid; // 실제 wall의 element 번호? 쯤이라고 생각해.
-            public float dist; // wall이 존재하는 거리
-            public float angle; // wall의 각도            
-
-            public override string ToString()
-            {
-                return "" + dist + "+" + angle;
-            }
-        }
-
-        public List<Wall[]> m_Walls = new List<Wall[]>();
-
-        public Shadow()
+        public Shadow2()
         {
         }
 
@@ -56,19 +22,7 @@ namespace DxLib
             m_Walls.Clear();
         }
 
-        Vector2 FromAngDist(float angle, float dist)
-        {
-            return new Vector2(dist * (float)Math.Cos(angle), dist * (float)Math.Sin(angle));
-        }
-
-        float getdistforangle(Wall w1, Wall w2, float angle)
-        {
-            Vector2 v1 = FromAngDist(w1.angle - angle, w1.dist);
-            Vector2 v2 = FromAngDist(w2.angle - angle, w2.dist);
-            return getinetersecty0(v1, v2);
-        }
-
-        void addit(float d1, float a1, float d2, float a2)
+        void addit(Vector2 p1, Vector2 p2)
         {
             Vector2[] Boundary = new Vector2[4] {
                 new Vector2(3,3),
@@ -76,6 +30,12 @@ namespace DxLib
                 new Vector2(-3,-3),
                 new Vector2(3,-3),
             };
+
+            float a1 = (float)Math.Atan2(p1.Y, p1.X); 
+            if (a1 < 0) a1 += (float)Math.PI * 2;
+            float a2 = (float)Math.Atan2(p2.Y, p2.X);
+            if (a2 < 0) a2 += (float)Math.PI * 2;
+            DxLib.Geometry2D.Line line = new DxLib.Geometry2D.Line(p1,p2);
 
             int cnt = 2;
             for (int i = 0; i < 4; i++)
@@ -88,28 +48,22 @@ namespace DxLib
                 }
             }
 
-            Wall[] Walls = new Wall[cnt];
-            Walls[0] = new Wall(0, d1, a1);
-            Walls[cnt-1] = new Wall(0, d2, a2);
-            cnt=1;
+            Vector2[] Walls = new Vector2[cnt];
+            Walls[0] = p1;
+            Walls[cnt - 1] = p2;
+            cnt = 1;
             for (int i = 0; i < 4; i++)
             {
                 float angle = (float)Math.Atan2(Boundary[i].Y, Boundary[i].X);
                 if (angle < 0) angle += (float)Math.PI * 2;
                 if (a1 < angle && angle < a2)
                 {
-                    float dist = getdistforangle(Walls[0], Walls[Walls.Count()-1], angle);
-                    Walls[cnt] = new Wall(0, dist, angle);
+                    Walls[cnt] = line.GetIntersection(angle);
                     cnt++;
                 }
             }
 
             m_Walls.Add(Walls);
-        }
-
-        float getinetersecty0(Vector2 p1, Vector2 p2)
-        {
-            return (p1.X * p2.Y - p1.Y * p2.X) / (p2.Y - p1.Y);
         }
 
         public void AddWall(Vector2 p1, Vector2 p2)
@@ -128,24 +82,20 @@ namespace DxLib
             if (angle2 < 0) angle2 += Math.PI * 2.0;
             if (angle2 < angle1)
             {
-                float tmp = getinetersecty0(p1, p2);
-                addit(tmp, 0.0f, p2.Length(), (float)angle2);
-                addit(p1.Length(), (float)angle1, tmp, (float)Math.PI * 2.0f);
+                DxLib.Geometry2D.Line line = new DxLib.Geometry2D.Line(p1, p2);
+                Vector2 tmp = line.GetIntersection(0.0);
+                addit(tmp, p2);
+                addit(p1, tmp);
             }
             else
             {
-                addit(p1.Length(), (float)angle1, p2.Length(), (float)angle2);
+                addit(p1, p2);
             }
         }
 
         public override string ToString()
         {
-            string ret = "";
-            for (int i = 0; i < m_Walls.Count; i++)
-            {
-                ret += m_Walls[i].ToString() + "\n";
-            }
-            return base.ToString() + ret;
+            return base.ToString();
         }
 
         private VertexBuffer m_VB = null;
@@ -154,7 +104,7 @@ namespace DxLib
         public VertexBuffer BuildShadowVertex(Device dx_device, Vector2 ViewerPos)
         {
             int vc = 0;
-            foreach (Wall[] w in m_Walls)
+            foreach (Vector2[] w in m_Walls)
             {
                 for (int i = 0; i < w.Count() - 1; i++)
                 {
@@ -174,42 +124,42 @@ namespace DxLib
                 array[i].Color = Color.Black.ToArgb();
 
             vc = 0;
-            foreach (Wall[] w in m_Walls)
+            foreach (Vector2[] w in m_Walls)
             {
                 for (int i = 0; i < w.Count() - 1; i++)
                 {
-                    Wall tmp = w[i], tmp2 = w[i + 1];
-                    tmp.dist += 25;
-                    tmp2.dist += 25;
+                    Vector2 tmp = w[i], tmp2 = w[i + 1];
+                    tmp.Normalize(); tmp.Scale(25);
+                    tmp2.Normalize(); tmp2.Scale(25);
 
-                    array[vc].X = w[i].x;
+                    array[vc].X = w[i].X;
                     array[vc].Y = 0;
-                    array[vc].Z = w[i].y;
+                    array[vc].Z = w[i].Y;
                     vc++;
 
-                    array[vc].X = w[i+1].x;
+                    array[vc].X = w[i + 1].X;
                     array[vc].Y = 0;
-                    array[vc].Z = w[i+1].y;
+                    array[vc].Z = w[i + 1].Y;
                     vc++;
 
-                    array[vc].X = tmp.x;
+                    array[vc].X = tmp.X;
                     array[vc].Y = 0;
-                    array[vc].Z = tmp.y;
+                    array[vc].Z = tmp.Y;
                     vc++;
 
-                    array[vc].X = w[i+1].x;
+                    array[vc].X = w[i + 1].X;
                     array[vc].Y = 0;
-                    array[vc].Z = w[i+1].y;
+                    array[vc].Z = w[i + 1].Y;
                     vc++;
 
-                    array[vc].X = tmp2.x;
+                    array[vc].X = tmp2.X;
                     array[vc].Y = 0;
-                    array[vc].Z = tmp2.y;
+                    array[vc].Z = tmp2.Y;
                     vc++;
 
-                    array[vc].X = tmp.x;
+                    array[vc].X = tmp.X;
                     array[vc].Y = 0;
-                    array[vc].Z = tmp.y;
+                    array[vc].Z = tmp.Y;
                     vc++;
                 }
             }
