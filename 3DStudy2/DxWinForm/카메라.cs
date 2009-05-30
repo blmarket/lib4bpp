@@ -25,13 +25,12 @@ namespace DxLib
             v3.Scale(1.0f/v3.Y);
             Vector3 v4 = v1 - v3 * v1.Y; // Y 값이 0이 되는 방정식 계산.
 
-            return new Vector2(v4.X, v4.Z);
+            return new Vector2(v4.X - m_Position.pos.X, v4.Z - m_Position.pos.Y);
         }
 
         public 카메라()
         {
-            m_View = Matrix.LookAtLH(new Vector3(5, 15, -5), new Vector3(0, 0, 0), new Vector3(0, 1, 0));
-            m_Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4, 1.0f, 0.1f, 100.0f);
+            //m_Projection = Matrix.PerspectiveFovLH((float)Math.PI / 4, 1.0f, 0.1f, 100.0f);
             m_Projection = Matrix.OrthoLH(8, 8, 0.1f, 100.0f);
         }
 
@@ -39,7 +38,7 @@ namespace DxLib
         {
             get
             {
-                return m_Position.getWorldMatrix();
+                return Matrix.Identity;
             }
         }
 
@@ -51,8 +50,17 @@ namespace DxLib
             }
         }
 
-        public Matrix m_View;
+        public Matrix m_View
+        {
+            get
+            {
+                Vector3 Pos3 = new Vector3(m_Position.pos.X, 0, m_Position.pos.Y);
+                return Matrix.LookAtLH(Pos3 + m_CameraVec, Pos3, new Vector3(0, 1, 0));
+            }
+        }
+
         public Matrix m_Projection;
+        public Vector3 m_CameraVec = new Vector3(5, 15, -5);
 
         public 플레이어위치 m_Position = new 플레이어위치();
     }

@@ -17,7 +17,13 @@ namespace DxWinForm
             Application.SetCompatibleTextRenderingDefault(false);
             m_Form = new Form1();
             Application.Idle += new EventHandler(Application_Idle);
-            Application.Run(m_Form);
+            m_Form.Show();
+            while (m_Form.Created)
+            {
+                m_Form.Idle();
+                Application.DoEvents();
+            }
+//            Application.Run(m_Form);
         }
 
         static void Application_Idle(object sender, EventArgs e)

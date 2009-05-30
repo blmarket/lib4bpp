@@ -196,11 +196,13 @@ namespace DxLib
 
         private void AddShadowVertex(List<CustomVertex.PositionColored> list, Vector2 p1, Vector2 p2, Vector2 translation)
         {
-            p1 -= translation;
-            p2 -= translation;
-            Vector2 tmp1 = p1 + translation, tmp2 = p2 + translation;
+            Vector2 tmp1 = p1, tmp2 = p2;
             tmp1.Normalize(); tmp1.Scale(25);
             tmp2.Normalize(); tmp2.Scale(25);
+            tmp1 += translation;
+            tmp2 += translation;
+            p1 += translation;
+            p2 += translation;
             Func<Vector2, CustomVertex.PositionColored> tmpfunc = (x) =>
             {
                 return new CustomVertex.PositionColored(x.X, 0, x.Y, Color.Black.ToArgb());
@@ -226,7 +228,7 @@ namespace DxLib
 
             foreach (Vector2[] w in m_Walls)
             {
-                Vector2 p1 = w[0] + ViewerPos, p2 = w[1] + ViewerPos;
+                Vector2 p1 = w[0] - ViewerPos, p2 = w[1] - ViewerPos;
 
                 double a1 = Math.Atan2(p1.Y,p1.X), a2 = Math.Atan2(p2.Y,p2.X);
                 double adiff = a2 - a1;
@@ -241,7 +243,7 @@ namespace DxLib
                 if (a2 < a1) a2 += Math.PI * 2;
                 for (int i = 0; i < 4; i++)
                 {
-                    double angle = Math.Atan2(Boundary[i].Y + ViewerPos.Y, Boundary[i].X + ViewerPos.X);
+                    double angle = Math.Atan2(Boundary[i].Y - ViewerPos.Y, Boundary[i].X - ViewerPos.X);
                     if(angle < a1) angle += Math.PI * 2;
                     if (angle < a2)
                     {

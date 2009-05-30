@@ -26,7 +26,7 @@ namespace DxWinForm
             if (m_Rbuttondown)
             {
                 Vector2 move = m_Camera.getPicking(m_Cursor.m_MousePoint, dx_device.Viewport);
-                m_Camera.m_Position.pos -= Vector2.Scale(move, 0.01f);
+                m_Camera.m_Position.pos += Vector2.Scale(move, 0.01f);
             }
         }
         
@@ -53,6 +53,11 @@ namespace DxWinForm
             m_Objects.Add(walls); // m_Objects[4]
 
             m_Mesh = Mesh.Teapot(dx_device);
+            m_Material = dx_device.Material;
+            m_Material.Diffuse = Color.Green;
+            m_Material.Ambient = Color.Green;
+            m_Material.Emissive = Color.Green;
+            m_Material.Specular = Color.Green;
             Bitmap Bits = new Bitmap(512,512);
             Graphics g = Graphics.FromImage(Bits);
             Pen pen = new Pen(Color.Magenta);
@@ -169,6 +174,15 @@ namespace DxWinForm
             m_Objects[1].render(dx_device);
             m_Objects[4].render(dx_device);
 
+            dx_device.RenderState.Lighting = true;
+            dx_device.Material = m_Material;
+            dx_device.Transform.World = 
+                Matrix.Scaling(0.1f,0.1f,0.1f)
+                * Matrix.Translation(m_Camera.m_Position.pos.X, 0, m_Camera.m_Position.pos.Y);
+            m_Mesh.DrawSubset(0);
+            dx_device.Transform.World = m_Camera.m_World;
+            dx_device.RenderState.Lighting = false;
+
             // 그림자에 해당하는 부분을 다시 그린다.
             dx_device.RenderState.ZBufferEnable = true;
             dx_device.RenderState.ZBufferWriteEnable = false;
@@ -227,6 +241,7 @@ namespace DxWinForm
         private Device dx_device = null;
         private List<VertexBuffers.DrawItem> m_Objects = new List<VertexBuffers.DrawItem>();
         private Mesh m_Mesh = null;
+        private Material m_Material;
         private Texture m_Tex = null;
         private Boolean m_Rbuttondown = false;
 
@@ -530,10 +545,10 @@ namespace DxWinForm
 
                 CustomVertex.TransformedColored[] points = new CustomVertex.TransformedColored[4]
                 {
-                    new CustomVertex.TransformedColored(0,0,0,1,gray.ToArgb()),
-                    new CustomVertex.TransformedColored(0,sy,0,1,gray.ToArgb()),
-                    new CustomVertex.TransformedColored(sx,0,0,1,gray.ToArgb()),
-                    new CustomVertex.TransformedColored(sx,sy,0,1,gray.ToArgb()),
+                    new CustomVertex.TransformedColored(0,0,0.1f,1,gray.ToArgb()),
+                    new CustomVertex.TransformedColored(0,sy,0.1f,1,gray.ToArgb()),
+                    new CustomVertex.TransformedColored(sx,0,0.1f,1,gray.ToArgb()),
+                    new CustomVertex.TransformedColored(sx,sy,0.1f,1,gray.ToArgb()),
                 };
 
                 CustomVertex.TransformedColored[] vertices = new CustomVertex.TransformedColored[6]
