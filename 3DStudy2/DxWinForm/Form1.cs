@@ -49,7 +49,7 @@ namespace DxWinForm
             VertexBuffers.ShadowFullScreen shadows = new VertexBuffers.ShadowFullScreen(dx_device, 500, 500);
             m_Objects.Add(shadows);
 
-            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 1, -3, 3, -3, 3);
+            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 5, -3, 3, -3, 3);
             m_Objects.Add(walls); // m_Objects[4]
 
             m_Mesh = Mesh.Teapot(dx_device);
@@ -257,7 +257,7 @@ namespace DxWinForm
                     break;
                 case Keys.R:
                     {
-                        VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 1, -3, 3, -3, 3);
+                        VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 5, -3, 3, -3, 3);
                         m_Objects[4] = walls; // m_Objects[4]
                         break;
                     }
@@ -507,7 +507,7 @@ namespace DxWinForm
                 return ret;
             }
 
-            public DxLib.Shadow2 m_shadow = new DxLib.Shadow2();
+            public DxLib.Shadow3 m_shadow = new DxLib.Shadow3();
             private List<Wall> m_List = new List<Wall>();
         }
 

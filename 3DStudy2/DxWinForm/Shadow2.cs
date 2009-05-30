@@ -167,4 +167,103 @@ namespace DxLib
             return m_VB;
         }
     }
+
+    public class Shadow3
+    {
+        public List<Vector2[]> m_Walls = new List<Vector2[]>();
+
+        public Shadow3()
+        {
+        }
+
+        public void clear()
+        {
+            m_Walls.Clear();
+        }
+
+        public void AddWall(Vector2 p1, Vector2 p2)
+        {
+            m_Walls.Add(new Vector2[2] { p1, p2 });
+        }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
+
+        private VertexBuffer m_VB = null;
+        public int m_VertexCount = 0;
+
+        private void AddShadowVertex(List<CustomVertex.PositionColored> list, Vector2 p1, Vector2 p2, Vector2 translation)
+        {
+            p1 -= translation;
+            p2 -= translation;
+            Vector2 tmp1 = p1 + translation, tmp2 = p2 + translation;
+            tmp1.Normalize(); tmp1.Scale(25);
+            tmp2.Normalize(); tmp2.Scale(25);
+            Func<Vector2, CustomVertex.PositionColored> tmpfunc = (x) =>
+            {
+                return new CustomVertex.PositionColored(x.X, 0, x.Y, Color.Black.ToArgb());
+            };
+            list.Add(tmpfunc(p1));
+            list.Add(tmpfunc(p2));
+            list.Add(tmpfunc(tmp1));
+            list.Add(tmpfunc(p2));
+            list.Add(tmpfunc(tmp1));
+            list.Add(tmpfunc(tmp2));
+        }
+
+        public VertexBuffer BuildShadowVertex(Device dx_device, Vector2 ViewerPos)
+        {
+            Vector2[] Boundary = new Vector2[4] {
+                new Vector2(3,3),
+                new Vector2(-3,3),
+                new Vector2(-3,-3),
+                new Vector2(3,-3),
+            };
+
+            List<CustomVertex.PositionColored> list = new List<CustomVertex.PositionColored>();
+
+            foreach (Vector2[] w in m_Walls)
+            {
+                Vector2 p1 = w[0] + ViewerPos, p2 = w[1] + ViewerPos;
+
+                double a1 = Math.Atan2(p1.Y,p1.X), a2 = Math.Atan2(p2.Y,p2.X);
+                double adiff = a2 - a1;
+                if (adiff < 0) adiff += Math.PI * 2.0;
+                if (adiff > Math.PI)
+                {
+                    adiff = a2; a2 = a1; a1 = adiff;
+                    Vector2 p = p2; p2 = p1; p1 = p;
+                }
+
+                Geometry2D.Line line = new DxLib.Geometry2D.Line(p1, p2);
+                if (a2 < a1) a2 += Math.PI * 2;
+                for (int i = 0; i < 4; i++)
+                {
+                    double angle = Math.Atan2(Boundary[i].Y + ViewerPos.Y, Boundary[i].X + ViewerPos.X);
+                    if(angle < a1) angle += Math.PI * 2;
+                    if (angle < a2)
+                    {
+                        Vector2 p = line.GetIntersection(angle);
+                        AddShadowVertex(list, p1, p, ViewerPos);
+                        p1 = p;
+                    }
+                }
+                AddShadowVertex(list, p1, p2, ViewerPos);
+            }
+
+            if (m_VB != null) m_VB.Dispose();
+            m_VB = new VertexBuffer(typeof(CustomVertex.PositionColored), list.Count(), dx_device, Usage.None,
+                CustomVertex.PositionColored.Format, Pool.Managed);
+
+            m_VertexCount = list.Count();
+
+            CustomVertex.PositionColored[] array = (CustomVertex.PositionColored[])m_VB.Lock(0, LockFlags.None);
+            list.CopyTo(array);
+            m_VB.Unlock();
+            return m_VB;
+        }
+    }
+
 }
