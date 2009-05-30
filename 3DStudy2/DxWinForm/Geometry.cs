@@ -12,7 +12,7 @@ namespace DxLib
         /// <summary>
         /// Ax + By = C 형식의 Line을 표현
         /// </summary>
-        struct Line
+        public struct Line
         {
             /// <summary>
             ///  두 개의 점으로부터 Line을 생성. p1과 p2는 직선을 지나는 두개의 점
@@ -34,7 +34,47 @@ namespace DxLib
                 return new Vector2((a * C) / (A * a + B * b), (b * C) / (A * a + B * b));
             }
 
+            public Vector2 GetIntersection(Line other)
+            {
+                float D = other.A, E = other.B, F = other.C;
+                float div = A * E - D * B;
+                return new Vector2((E * C - B * F) / div, (A * F - C * D) / div);                
+            }
+
             float A, B, C;
+        }
+
+        /// <summary>
+        /// 두 개의 점으로 구성된 선분.
+        /// </summary>
+        public struct LineSegment
+        {
+            Vector2 p1, p2;
+
+            public LineSegment(Vector2 p1, Vector2 p2)
+            {
+                this.p1 = p1;
+                this.p2 = p2;
+            }
+
+            public float Ccw(Vector2 v)
+            {
+                return Vector2.Ccw(p2 - p1, v - p1);
+            }
+
+            public bool intersect(LineSegment other, out Vector2 ptr)
+            {
+                if (Ccw(other.p1) * Ccw(other.p2) < 0 &&
+                    other.Ccw(p1) * other.Ccw(p2) < 0)
+                {
+                    ptr = GetLine.GetIntersection(other.GetLine);
+                    return true;
+                }
+                ptr = new Vector2();
+                return false;
+            }
+
+            public Line GetLine { get { return new Line(p1, p2); } }
         }
     }
 }

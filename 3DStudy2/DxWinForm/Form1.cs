@@ -49,7 +49,7 @@ namespace DxWinForm
             VertexBuffers.ShadowFullScreen shadows = new VertexBuffers.ShadowFullScreen(dx_device, 500, 500);
             m_Objects.Add(shadows);
 
-            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 5, -3, 3, -3, 3);
+            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 500, -3, 3, -3, 3);
             m_Objects.Add(walls); // m_Objects[4]
 
             m_Mesh = Mesh.Teapot(dx_device);
@@ -177,7 +177,7 @@ namespace DxWinForm
             dx_device.RenderState.Lighting = true;
             dx_device.Material = m_Material;
             dx_device.Transform.World = 
-                Matrix.Scaling(0.1f,0.1f,0.1f)
+                Matrix.Scaling(0.1f,2f,0.1f)
                 * Matrix.Translation(m_Camera.m_Position.pos.X, 0, m_Camera.m_Position.pos.Y);
             m_Mesh.DrawSubset(0);
             dx_device.Transform.World = m_Camera.m_World;
@@ -272,7 +272,7 @@ namespace DxWinForm
                     break;
                 case Keys.R:
                     {
-                        VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 5, -3, 3, -3, 3);
+                        VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 1000, -3, 3, -3, 3);
                         m_Objects[4] = walls; // m_Objects[4]
                         break;
                     }
