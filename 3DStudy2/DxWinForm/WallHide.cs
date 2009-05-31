@@ -14,8 +14,14 @@ namespace DxLib
             WallHide wh = new WallHide();
             wh.AddWall(new Vector2(0, 0), new Vector2(5, 5));
             wh.AddWall(new Vector2(0, 5), new Vector2(5, 0));
+            wh.AddWall(new Vector2(0, 0), new Vector2(5, 0));
+            wh.AddWall(new Vector2(0, 5), new Vector2(5, 5));
+            wh.AddWall(new Vector2(2.5f, 0), new Vector2(2.5f, 5));
         }
 
+        /// <summary>
+        /// 벽을 추가한다. 모든 벽들이 서로 intersect하게 되는 일이 없도록 벽을 쪼갠다.
+        /// </summary>
         public void AddWall(Vector2 p1, Vector2 p2)
         {
             Geometry2D.LineSegment line = new DxLib.Geometry2D.LineSegment(p1, p2);
@@ -32,6 +38,6 @@ namespace DxLib
             m_Walls.Add(line);
         }
 
-        public List<Geometry2D.LineSegment> m_Walls;
+        public List<Geometry2D.LineSegment> m_Walls = new List<DxLib.Geometry2D.LineSegment>();
     }
 }
