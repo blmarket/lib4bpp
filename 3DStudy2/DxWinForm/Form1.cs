@@ -49,7 +49,7 @@ namespace DxWinForm
             VertexBuffers.ShadowFullScreen shadows = new VertexBuffers.ShadowFullScreen(dx_device, 500, 500);
             m_Objects.Add(shadows);
 
-            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 500, -3, 3, -3, 3);
+            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 5, -3, 3, -3, 3);
             m_Objects.Add(walls); // m_Objects[4]
 
             m_Mesh = Mesh.Teapot(dx_device);
