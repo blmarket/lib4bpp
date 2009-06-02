@@ -38,28 +38,56 @@ namespace DxLib
             {
                 float D = other.A, E = other.B, F = other.C;
                 float div = A * E - D * B;
-                return new Vector2((E * C - B * F) / div, (A * F - C * D) / div);                
+                return new Vector2((E * C - B * F) / div, (A * F - C * D) / div);
+            }
+
+            public float GetDist(Vector2 point)
+            {
+                return Math.Abs(C - A * point.X - B * point.Y) / (float)Math.Sqrt(A * A + B * B);
             }
 
             float A, B, C;
         }
 
         /// <summary>
-        /// 두 개의 점으로 구성된 선분.
+        /// 두 개의 점으로 구성된 선분. p1에는 항상 더 작은 각도가, p2에는 항상 더 큰 각도가 들어있다.
         /// </summary>
         public struct LineSegment
         {
-            Vector2 p1, p2;
+            public Vector2 p1, p2;
+            public static double GetAngle(Vector2 p) { return Math.Atan2(p.Y, p.X); }
+
+            public double Angle1 { get { return Math.Atan2(p1.Y, p1.X); } }
+            public double Angle2 { get { return Math.Atan2(p2.Y, p2.X); } }
 
             public LineSegment(Vector2 p1, Vector2 p2)
             {
-                this.p1 = p1;
-                this.p2 = p2;
+                double adiff = GetAngle(p2) - GetAngle(p1);
+                if (adiff < 0) adiff += Math.PI * 2;
+                if (adiff > Math.PI)
+                {
+                    this.p1 = p2;
+                    this.p2 = p1;
+                }
+                else
+                {
+                    this.p1 = p1;
+                    this.p2 = p2;
+                }
             }
 
             public float Ccw(Vector2 v)
             {
                 return Vector2.Ccw(p2 - p1, v - p1);
+            }
+
+            public bool GetIntersect(double angle, out Vector2 ptr)
+            {
+                if (angle < Angle1) angle += Math.PI * 2;
+                ptr = new Vector2();
+                if (angle > Angle2) return false;
+                ptr = GetLine.GetIntersection(angle);
+                return true;
             }
 
             public bool intersect(LineSegment other, out Vector2 ptr)

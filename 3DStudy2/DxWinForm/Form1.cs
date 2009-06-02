@@ -25,8 +25,10 @@ namespace DxWinForm
             Render1();
             if (m_Rbuttondown)
             {
-                Vector2 move = m_Camera.getPicking(m_Cursor.m_MousePoint, dx_device.Viewport);
-                m_Camera.m_Position.pos += Vector2.Scale(move, 0.01f);
+                Vector2 move = Vector2.Scale(m_Camera.getPicking(m_Cursor.m_MousePoint, dx_device.Viewport), 0.01f);
+                VertexBuffers.Walls walls = (VertexBuffers.Walls)m_Objects[4];
+                move = walls.GetBlock(m_Camera.m_Position.pos, move);
+                m_Camera.m_Position.pos += move;
             }
         }
         
@@ -471,6 +473,8 @@ namespace DxWinForm
                 vb.SetData((object)vertices, 0, LockFlags.None);
             }
 
+            public DxLib.Geometry2D.LineSegment Line { get { return new DxLib.Geometry2D.LineSegment(p1, p2); } }
+
             private Vector2 p1, p2;
             private float height;
         }
@@ -494,6 +498,23 @@ namespace DxWinForm
                 {
                     w.render(dx_device);
                 }
+            }
+
+            public Vector2 GetBlock(Vector2 pos, Vector2 move)
+            {
+                double angle = Math.Atan2(move.Y, move.X);
+
+                float maxdist = move.Length();
+
+                foreach (Wall w in m_List)
+                {
+                    Vector2 ptr;
+                    if (w.Line.GetIntersect(angle, out ptr))
+                    {
+                        maxdist = Math.Min(maxdist, w.Line.GetLine.GetDist(pos) - 0.1f);
+                    }
+                }
+                return Vector2.Scale(move,maxdist / move.Length());
             }
 
             public static Walls CreateRandomWalls(Device dx_device, int cnt, float minx, float maxx, float miny, float maxy)
