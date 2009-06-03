@@ -26,8 +26,8 @@ namespace DxWinForm
             if (m_Rbuttondown)
             {
                 Vector2 move = Vector2.Scale(m_Camera.getPicking(m_Cursor.m_MousePoint, dx_device.Viewport), 0.01f);
-                VertexBuffers.Walls walls = (VertexBuffers.Walls)m_Objects[4];
-                move = walls.GetBlock(m_Camera.m_Position.pos, move);
+//                VertexBuffers.Walls walls = (VertexBuffers.Walls)m_Objects[4];
+//                move = walls.GetBlock(m_Camera.m_Position.pos, move);
                 m_Camera.m_Position.pos += move;
             }
         }
@@ -51,8 +51,7 @@ namespace DxWinForm
             VertexBuffers.ShadowFullScreen shadows = new VertexBuffers.ShadowFullScreen(dx_device, 500, 500);
             m_Objects.Add(shadows);
 
-            VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 5, -3, 3, -3, 3);
-            m_Objects.Add(walls); // m_Objects[4]
+            m_Walls = DxLib.WallHide.CreateRandomWalls(dx_device, 5, -3, 3, -3, 3);
 
             m_Mesh = Mesh.Teapot(dx_device);
             m_Material = dx_device.Material;
@@ -118,7 +117,7 @@ namespace DxWinForm
             dx_device.SetTransform(TransformType.View, matView);
             dx_device.SetTransform(TransformType.Projection, matProj);
 
-            m_Objects[4].render(dx_device);
+            m_Walls.render(dx_device);
 
             dx_device.EndScene();
             dx_device.Present();
@@ -161,10 +160,10 @@ namespace DxWinForm
 //            dx_device.Transform.World = m_Camera.m_ShadowWorld;
 //            m_Objects[4].render(dx_device);
 //            dx_device.Transform.World = m_Camera.m_World;
-            VertexBuffer tmp = ((VertexBuffers.Walls)m_Objects[4]).m_shadow.BuildShadowVertex(dx_device, m_Camera.m_Position.pos);
+            VertexBuffer tmp = m_Walls.m_shadow.BuildShadowVertex(dx_device, m_Camera.m_Position.pos);
             dx_device.SetStreamSource(0, tmp, 0);
             dx_device.VertexFormat = tmp.Description.VertexFormat;
-            dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, ((VertexBuffers.Walls)m_Objects[4]).m_shadow.m_VertexCount / 3);
+            dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, m_Walls.m_shadow.m_VertexCount / 3);
 
             // 원래 객체를 그린다.
             dx_device.RenderState.ShadeMode = ShadeMode.Gouraud;
@@ -174,7 +173,7 @@ namespace DxWinForm
             dx_device.RenderState.AlphaBlendEnable = false;
             m_Objects[0].render(dx_device);
             m_Objects[1].render(dx_device);
-            m_Objects[4].render(dx_device);
+            m_Walls.render(dx_device);
 
             dx_device.RenderState.Lighting = true;
             dx_device.Material = m_Material;
@@ -223,7 +222,7 @@ namespace DxWinForm
             Microsoft.DirectX.Direct3D.Font fnt = new Microsoft.DirectX.Direct3D.Font(dx_device, desc);            
 
             fnt.DrawText(null, m_Camera.ToString() + "\n" 
-                + ((VertexBuffers.Walls)m_Objects[4]).m_shadow + "\n"
+                + m_Walls.m_shadow + "\n"
                 + m_Camera.getPicking(m_Cursor.m_MousePoint, dx_device.Viewport), new Point(5, 5), Color.Aquamarine);
 
             fnt.Dispose();
@@ -242,6 +241,7 @@ namespace DxWinForm
         public DxLib.커서위치 m_Cursor = new DxLib.커서위치();
         private Device dx_device = null;
         private List<VertexBuffers.DrawItem> m_Objects = new List<VertexBuffers.DrawItem>();
+        private DxLib.WallHide m_Walls = null;
         private Mesh m_Mesh = null;
         private Material m_Material;
         private Texture m_Tex = null;
@@ -274,8 +274,7 @@ namespace DxWinForm
                     break;
                 case Keys.R:
                     {
-                        VertexBuffers.Walls walls = VertexBuffers.Walls.CreateRandomWalls(dx_device, 1000, -3, 3, -3, 3);
-                        m_Objects[4] = walls; // m_Objects[4]
+                        m_Walls = DxLib.WallHide.CreateRandomWalls(dx_device, 100, -3, 3, -3, 3);
                         break;
                     }
             }

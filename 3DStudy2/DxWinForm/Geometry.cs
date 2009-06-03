@@ -92,8 +92,8 @@ namespace DxLib
 
             public bool intersect(LineSegment other, out Vector2 ptr)
             {
-                if (Ccw(other.p1) * Ccw(other.p2) < 0 &&
-                    other.Ccw(p1) * other.Ccw(p2) < 0)
+                if (Ccw(other.p1) * Ccw(other.p2) < -1e-8 &&
+                    other.Ccw(p1) * other.Ccw(p2) < -1e-8)
                 {
                     ptr = GetLine.GetIntersection(other.GetLine);
                     return true;

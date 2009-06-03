@@ -256,7 +256,7 @@ namespace DxLib
             }
 
             if (m_VB != null) m_VB.Dispose();
-            m_VB = new VertexBuffer(typeof(CustomVertex.PositionColored), list.Count(), dx_device, Usage.None,
+            m_VB = new VertexBuffer(typeof(CustomVertex.PositionColored), list.Count() + 1, dx_device, Usage.None,
                 CustomVertex.PositionColored.Format, Pool.Managed);
 
             m_VertexCount = list.Count();

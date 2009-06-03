@@ -13,8 +13,6 @@ namespace DxWinForm
         [STAThread]
         static void Main()
         {
-            DxLib.WallHide.test();
-
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             m_Form = new Form1();
