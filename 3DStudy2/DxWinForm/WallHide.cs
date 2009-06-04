@@ -89,11 +89,17 @@ namespace DxLib
                     ll.GetIntersect(Math.PI, out p);
                     Geometry2D.LineSegment l1 = new DxLib.Geometry2D.LineSegment(p1, p);
                     Geometry2D.LineSegment l2 = new DxLib.Geometry2D.LineSegment(p, p2);
+                    l1.p1 += ViewerPos;
+                    l1.p2 += ViewerPos;
+                    l2.p1 += ViewerPos;
+                    l2.p2 += ViewerPos;
                     lines.Add(l1);
                     lines.Add(l2);
                 }
                 else
                 {
+                    ll.p1 += ViewerPos;
+                    ll.p2 += ViewerPos;
                     lines.Add(ll);
                 }
             }
@@ -125,6 +131,7 @@ namespace DxLib
         public void render(Device dx_device)
         {
             dx_device.SetStreamSource(0, m_VB, 0);
+            dx_device.VertexFormat = m_VB.Description.VertexFormat;
             dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, m_nPrimitives);
         }
 

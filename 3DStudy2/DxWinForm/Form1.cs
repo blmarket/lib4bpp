@@ -161,6 +161,7 @@ namespace DxWinForm
 //            m_Objects[4].render(dx_device);
 //            dx_device.Transform.World = m_Camera.m_World;
             VertexBuffer tmp = m_Walls.m_shadow.BuildShadowVertex(dx_device, m_Camera.m_Position.pos);
+            m_Walls.BuildVertexBuffer(dx_device, m_Camera.m_Position.pos);
             dx_device.SetStreamSource(0, tmp, 0);
             dx_device.VertexFormat = tmp.Description.VertexFormat;
             dx_device.DrawPrimitives(PrimitiveType.TriangleList, 0, m_Walls.m_shadow.m_VertexCount / 3);
