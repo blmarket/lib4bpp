@@ -28,44 +28,41 @@ int makep2(int a)
 	return ret;
 }
 
-void multiply(VLL V1, VLL V2, VLL &V3)
+void mul(VLL a, VLL b, VLL &ret)
 {
-	int siz = max(V1.size(),V2.size()); siz = makep2(siz);
-	V1.resize(siz,0);
-	V2.resize(siz,0);
-	if(siz == 1)
+	if(a.size() < 100)
 	{
-		V3.resize(1);
-		V3[0] = V1[0] * V2[0];
+		ret = VLL(2*size(a));
+		for(int i=0;i<size(a);i++)
+			for(int j=0;j<size(b);j++)
+				ret[i+j] += a[i]*b[j];
 		return;
 	}
-	VLL V5(V1.begin()+siz/2,V1.end());
-	VLL V6(V2.begin()+siz/2,V2.end());
-	VLL V7;
-	multiply(V5,V6,V7);
-	V1.resize(siz/2);
-	V2.resize(siz/2);
-	VLL V8;
-	multiply(V1,V2,V8);
-	for(int i=0;i<siz/2;i++)
-	{
-		V1[i] += V5[i];
-		V2[i] += V6[i];
-	}
-	VLL V9;
-	multiply(V1,V2,V9);
-	for(int i=0;i<V9.size();i++)
-	{
-		V9[i] -= V7[i] + V8[i];
-	}
 
-	V8.resize(siz*2-1,0);
-	for(int i=0;i<V9.size();i++)
+	int sz = size(a);
+	VLL ax(a.begin()+sz/2,a.end());
+	VLL bx(b.begin()+sz/2,b.end());
+	a.resize(sz/2);
+	b.resize(sz/2);
+	VLL c,cx;
+	mul(a,b,c);
+	mul(ax,bx,cx);
+
+	for(int i=0;i<size(a);i++)
+		a[i] += ax[i];
+	for(int i=0;i<size(b);i++)
+		b[i] += bx[i];
+
+	VLL mx;
+	mul(a,b,mx);
+	ret = VLL(sz*2,0);
+	for(int i=0;i<c.size();i++)
 	{
-		V8[i+siz/2] += V9[i];
-		V8[i+siz] += V7[i];
+		mx[i] -= c[i] + cx[i];
+		ret[i] += c[i];
+		ret[i + sz/2] += mx[i];
+		ret[i + sz] += cx[i];
 	}
-	V3=V8;
 }
 
 int main(void)
@@ -74,48 +71,25 @@ int main(void)
 	VLL cur,next,tmp1,tmp2;
 
 	srand(time(NULL));
-	for(int i=0;i<4;i++)
+	for(int i=0;i<65536;i++)
 	{
-		a.pb(rand()%10);
-		b.pb(rand()%10);
+		a.pb(rand()%2);
+		b.pb(rand()%2);
 	}
 
+/*
 	for(int i=0;i<a.size();i++)
 		cout << a[i] << " ";
 	cout << endl;
 	for(int i=0;i<b.size();i++)
 		cout << b[i] << " ";
 	cout << endl;
+*/	
 
-	int siz = makep2(max(size(a),size(b)));
-
-	cur = VLL(siz*2,0);
-	for(int i=0;i<siz;i++)
-		cur[i*2] = a[i] * b[i];
-	
-	next = VLL(siz*2,0);
-	tmp1 = VLL(siz*2,0);
-	for(int i=2;i<=siz;i*=2)
-	{
-		for(int j=0;j<siz;j+=i)
-		{
-			for(int k=0;k<i/2;k++)
-			{
-				next[j*i*2 + k] = cur[j*i + k];
-				next[j*i*2 + i + k] = cur[(j+1)*i + k];
-				tmp1[k] = (a[j+k] + a[j+i/2+k]) * (b[j+k] + b[j+i/2+k]) - cur[j*i+k] - cur[(j+1)*i+k];
-				next[j*i*2 + i/2 + k] += tmp1[k];
-			}
-			for(int k=0;k<i*2;k++)
-			{
-				cout << next[j*i*2+k] << " ";
-			}
-			cout << endl;
-		}
-		next.swap(cur);
-	}
-
-	for(int i=0;i<cur.size();i++)
-		cout << cur[i] << " ";
+	VLL c;
+	mul(a,b,c);
+	for(int i=0;i<size(c);i++)
+		cout << c[i] << " ";
 	cout << endl;
+	return 0;
 }
