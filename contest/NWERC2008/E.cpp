@@ -1,4 +1,8 @@
 #include <iostream>
+#include <algorithm>
+#include <cstdio>
+#include <cstdlib>
+#include <sstream>
 #include <queue>
 #include <set>
 #include <map>
@@ -7,7 +11,6 @@
 #define mp make_pair
 #define pb push_back
 #define sqr(x) ((x)*(x))
-#define foreach(it,c) for(typeof((c).begin()) it = (c).begin(); it != (c).end(); ++it)
 
 using namespace std;
 
@@ -18,6 +21,7 @@ typedef pair<int,int> PII;
 typedef long long LL;
 
 template<typename T> int size(const T &a) { return a.size(); }
+template<typename T> T abs(const T &a) { return (a<0)?-a:a; }
 
 template<typename T1,typename T2,typename T3> T1 & operator<<(T1 &a, const pair<T2,T3> &b)
 {
