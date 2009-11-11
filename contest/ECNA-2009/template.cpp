@@ -22,7 +22,7 @@ typedef pair<int,int> PII;
 
 template<typename T> int size(const T &a) { return a.size(); }
 
-void process(void)
+bool process(int tcase)
 {
 }
 
@@ -32,7 +32,8 @@ int main(void)
 	scanf("%d",&N);
     for(int i=1;i<=N;i++)
     {
-        process();
+        if(!process(i)) break;
     }
+	return 0;
 }
 
