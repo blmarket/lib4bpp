@@ -28,9 +28,7 @@ bool process(int tcase)
 
 int main(void)
 {
-    int N;
-	scanf("%d",&N);
-    for(int i=1;i<=N;i++)
+	for(int i=1;;i++)
     {
         if(!process(i)) break;
     }
