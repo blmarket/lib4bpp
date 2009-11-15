@@ -24,14 +24,20 @@ typedef long long LL;
 template<typename T> inline int size(const T &a) { return a.size(); }
 template<typename T> inline bool operator<(const int &a,const vector<T> &b) { return a<b.size(); }
 
-bool process(void)
-{
-	return true;
-}
-
 int main(void)
 {
-	while(process());
-	return 0;
+	int n = 40;
+	srand(time(NULL));
+	cout << n << endl;
+	for(int i=0;i<n;i++)
+	{
+		int a,b,c,d;
+		a = rand()%1000;
+		b = rand()%1000;
+		c = 1+(rand()%1000);
+		d = 1+(rand()%1000);
+		cout << a << " " << b << " " << a+c << " " << b+d << endl;
+	}
+	cout << 0 << endl;
 }
 

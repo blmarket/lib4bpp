@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
@@ -26,12 +27,36 @@ template<typename T> inline bool operator<(const int &a,const vector<T> &b) { re
 
 bool process(void)
 {
-	return true;
+	string str;
+	getline(cin,str);
+
+	int pos = 0;
+
+	while(true)
+	{
+		pos = str.find("What is", pos);
+		if(pos == -1) break;
+		pos += 4;
+		int pos2 = str.find("?", pos+1);
+		int pos3 = str.find(".", pos+1);
+		if(pos2 == -1) break;
+		if(pos3!=-1 && pos3 < pos2)
+		{
+			pos=pos3+1;
+			continue;
+		}
+		cout << "Forty-two" << str.substr(pos, pos2-pos) << "." << endl;
+		pos = pos2+1;
+	}
+
+	str="";
+	getline(cin,str);
+	if(str != "") while(true);
+	return false;
 }
 
 int main(void)
 {
 	while(process());
-	return 0;
 }
 
