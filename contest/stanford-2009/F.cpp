@@ -79,7 +79,6 @@ bool process(void)
 				}
 			}
 		}
-		cout << i << " " << VV[i] << " " << prev[i] << endl;
 	}
 	cout << maxv << endl;
 	return true;

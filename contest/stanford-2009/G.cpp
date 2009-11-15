@@ -13,6 +13,7 @@
 #define mp make_pair
 #define pb push_back
 #define sqr(x) ((x)*(x))
+#define TYPE(it) typeof(it)
 #define foreach(it,c) for(typeof((c).begin()) it = (c).begin(); it != (c).end(); ++it)
 
 using namespace std;
@@ -42,41 +43,31 @@ map<int, PII> memo;
 
 PII get_max(int y)
 {
-	PII ret;
-	foreach(iter,memo)
-	{
-		if(iter->first >= y) break;
-		if(iter->second.first > ret.first)
-			ret = iter->second;
-	}
-
-	return ret;
+	map<int,PII>::iterator iter = memo.lower_bound(y);
+	if(iter == memo.begin()) return mp(0,-1);
+	--iter;
+	return iter->second;
 }
 
 void add_point(int y,int v,int chk)
 {
-	while(memo.size())
+	if(get_max(y).first >= v) return;
+	memo[y] = mp(v,chk);
+
+	TYPE(memo.begin()) iter = memo.find(y);
+	for(++iter;iter != memo.end();)
 	{
-		int tmpy = memo.rbegin()->first;
-		int tmpv = memo.rbegin()->second.first;
-		if(tmpy < y)
+		if(iter->second.first <= v)
 		{
-			break;
-		}
-		if(tmpv < v)
-		{
-			map<int,PII>::iterator iter = memo.end();
-			--iter;
-			memo.erase(iter);
+			TYPE(iter) jter = iter;
+			++iter;
+			memo.erase(jter);
 		}
 		else
 		{
-			break;
+			++iter;
 		}
 	}
-
-	if(get_max(y).first > v) return;
-	memo[y]=mp(v,chk);
 }
 
 bool process(void)
@@ -123,6 +114,7 @@ bool process(void)
 		int tmp1 = get_max(V[i].y0).first + 1;
 		int tmp2 = get_max(V[i].y0).second;
 		if(ret < tmp1) ret = tmp1;
+//		cout << i << " " << tmp1 << " " << tmp2 << endl;
 		nids.insert(mp(mp(V[i].x1, V[i].y1),mp(tmp1,i)));
 	}
 

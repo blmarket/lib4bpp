@@ -26,16 +26,16 @@ template<typename T> inline bool operator<(const int &a,const vector<T> &b) { re
 
 int main(void)
 {
-	int n = 40;
+	int n = 1000;
 	srand(time(NULL));
 	cout << n << endl;
 	for(int i=0;i<n;i++)
 	{
 		int a,b,c,d;
-		a = rand()%1000;
-		b = rand()%1000;
-		c = 1+(rand()%1000);
-		d = 1+(rand()%1000);
+		a = rand()%100000;
+		b = rand()%100000;
+		c = 1+(rand()%100000);
+		d = 1+(rand()%100000);
 		cout << a << " " << b << " " << a+c << " " << b+d << endl;
 	}
 	cout << 0 << endl;
