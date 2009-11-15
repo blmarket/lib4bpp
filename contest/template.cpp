@@ -21,19 +21,16 @@ typedef vector<string> VS;
 typedef pair<int,int> PII;
 typedef long long LL;
 
-template<typename T> int size(const T &a) { return a.size(); }
+template<typename T> inline int size(const T &a) { return a.size(); }
+template<typename T> inline bool operator<(const int &a,const vector<T> &b) { return a<b.size(); }
 
-void process(void)
+bool process(void)
 {
+	return true;
 }
 
 int main(void)
 {
-    int N;
-	scanf("%d",&N);
-    for(int i=1;i<=N;i++)
-    {
-        process();
-    }
+	while(process());
 }
 
