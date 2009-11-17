@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
@@ -7,6 +8,7 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <complex>
 
 #define mp make_pair
 #define pb push_back
@@ -20,6 +22,7 @@ typedef vector<VI> VVI;
 typedef vector<string> VS;
 typedef pair<int,int> PII;
 typedef long long LL;
+typedef complex<double> Point;
 
 template<typename T> inline int size(const T &a) { return a.size(); }
 template<typename T> inline bool operator<(const int &a,const vector<T> &b) { return a<b.size(); }
