@@ -23,6 +23,7 @@ typedef vector<string> VS;
 typedef pair<int,int> PII;
 typedef long long LL;
 typedef complex<double> Point;
+typedef complex<double> Vec;
 
 template<typename T> inline int size(const T &a) { return a.size(); }
 template<typename T> inline bool operator<(const int &a,const vector<T> &b) { return a<b.size(); }
@@ -57,6 +58,14 @@ pair<double, double> circle_circle(Point p1, Point p2, double radius)
 	cout << tmp1 << " " << tmp2 << endl;
 
 	return mp(0,0);
+}
+
+Vec get90(Vec v)
+{
+	Vec ret(v.imag(), -v.real());
+	ret /= abs(ret);
+	if(ret.imag() < 0) return -ret;
+	return ret;
 }
 
 int main(void)
