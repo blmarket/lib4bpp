@@ -1,0 +1,119 @@
+$VAR1 = 'HASH(0x2d8876c)';
+088980.KSprice => 5090
+069500.KSprice => 21635
+$VAR1 = '088980.KSyear_range';
+$VAR2 = '4295 - 5320';
+$VAR3 = '088980.KScurrency';
+$VAR4 = 'KRW';
+$VAR5 = '088980.KStime';
+$VAR6 = '11:42';
+$VAR7 = '088980.KSp_change';
+$VAR8 = '+0.20';
+$VAR9 = '088980.KSbid';
+$VAR10 = '5090';
+$VAR11 = '069500.KSmethod';
+$VAR12 = 'yahoo_asia';
+$VAR13 = '069500.KSnet';
+$VAR14 = '-45';
+$VAR15 = '088980.KSprice';
+$VAR16 = '5090';
+$VAR17 = '088980.KSisodate';
+$VAR18 = '2009-12-09';
+$VAR19 = '088980.KSday_range';
+$VAR20 = '5070 - 5100';
+$VAR21 = '069500.KSlast';
+$VAR22 = '21635';
+$VAR23 = '088980.KScap';
+$VAR24 = undef;
+$VAR25 = '069500.KSvolume';
+$VAR26 = '524741';
+$VAR27 = '088980.KSsymbol';
+$VAR28 = '088980.KS';
+$VAR29 = '069500.KSpe';
+$VAR30 = undef;
+$VAR31 = '088980.KSeps';
+$VAR32 = '0';
+$VAR33 = '088980.KSdate';
+$VAR34 = '12/09/2009';
+$VAR35 = '069500.KScap';
+$VAR36 = undef;
+$VAR37 = '069500.KSdiv';
+$VAR38 = '0';
+$VAR39 = '088980.KSvolume';
+$VAR40 = '108730';
+$VAR41 = '069500.KSask';
+$VAR42 = '21645';
+$VAR43 = '069500.KSdate';
+$VAR44 = '12/09/2009';
+$VAR45 = '069500.KScurrency';
+$VAR46 = 'KRW';
+$VAR47 = '069500.KSsuccess';
+$VAR48 = 1;
+$VAR49 = '069500.KSsymbol';
+$VAR50 = '069500.KS';
+$VAR51 = '088980.KSdiv_date';
+$VAR52 = undef;
+$VAR53 = '088980.KSask';
+$VAR54 = '5100';
+$VAR55 = '069500.KSlow';
+$VAR56 = '21455';
+$VAR57 = '069500.KSisodate';
+$VAR58 = '2009-12-09';
+$VAR59 = '069500.KSprice';
+$VAR60 = '21635';
+$VAR61 = '069500.KSname';
+$VAR62 = 'KODEX 200';
+$VAR63 = '069500.KShigh';
+$VAR64 = '21680';
+$VAR65 = '088980.KSlast';
+$VAR66 = '5090';
+$VAR67 = '069500.KSeps';
+$VAR68 = '0';
+$VAR69 = '088980.KSnet';
+$VAR70 = '+10';
+$VAR71 = '069500.KSbid';
+$VAR72 = '21630';
+$VAR73 = '069500.KSdiv_date';
+$VAR74 = undef;
+$VAR75 = '069500.KStime';
+$VAR76 = '11:42';
+$VAR77 = '088980.KSsuccess';
+$VAR78 = 1;
+$VAR79 = '088980.KSdiv';
+$VAR80 = '690';
+$VAR81 = '088980.KSlow';
+$VAR82 = '5070';
+$VAR83 = '069500.KSday_range';
+$VAR84 = '21455 - 21680';
+$VAR85 = '069500.KSex_div';
+$VAR86 = '27-Apr-07';
+$VAR87 = '069500.KSclose';
+$VAR88 = '21680';
+$VAR89 = '069500.KSdiv_yield';
+$VAR90 = undef;
+$VAR91 = '088980.KShigh';
+$VAR92 = '5100';
+$VAR93 = '069500.KSavg_vol';
+$VAR94 = '0';
+$VAR95 = '088980.KSmethod';
+$VAR96 = 'yahoo_asia';
+$VAR97 = '088980.KSdiv_yield';
+$VAR98 = '13.58';
+$VAR99 = '088980.KSname';
+$VAR100 = 'MKIF';
+$VAR101 = '088980.KSclose';
+$VAR102 = '5080';
+$VAR103 = '088980.KSopen';
+$VAR104 = '5100';
+$VAR105 = '088980.KSavg_vol';
+$VAR106 = '279830';
+$VAR107 = '069500.KSopen';
+$VAR108 = '21530';
+$VAR109 = '088980.KSpe';
+$VAR110 = undef;
+$VAR111 = '088980.KSex_div';
+$VAR112 = '27-Dec-07';
+$VAR113 = '069500.KSp_change';
+$VAR114 = '-0.21';
+$VAR115 = '069500.KSyear_range';
+$VAR116 = '21185 - 21590';
