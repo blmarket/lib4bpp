@@ -75,7 +75,7 @@ struct outp
 long long maxL;
 vector<outp> maxlifes;
 
-void mixup(const map<int, long long> &tmp1, const map<int, long long> &tmp2, map<int, long long> &tgt,int j,int i)
+void mixup(const map<int, long long> &tmp1, const map<int, long long> &tmp2, map<int, long long> &tgt,int jj,int ii)
 {
 	map<int,LL>::const_iterator iter1,iter2;
 
@@ -88,6 +88,8 @@ void mixup(const map<int, long long> &tmp1, const map<int, long long> &tmp2, map
 			if(iter2 == tmp2.end()) continue;
 			long long tmp = (iter1->second + iter2->second) * rr[i].d;
 
+//			cout << jj << " " << jj+ii << " born " << rev[rr[i].c] << endl;
+
 			if(tmp > maxL)
 			{
 				maxL = tmp;
@@ -96,7 +98,7 @@ void mixup(const map<int, long long> &tmp1, const map<int, long long> &tmp2, map
 
 			if(tmp == maxL)
 			{
-				maxlifes.push_back(outp(j,j+i,rev[rr[i].c]));
+				maxlifes.push_back(outp(jj,jj+ii,rev[rr[i].c]));
 			}
 
 			long long &tmp2 = tgt[rr[i].c];
@@ -145,7 +147,6 @@ int main(void)
 		for(int i=0;sin>>token;i++)
 		{
 			if(token == "") break;
-			maxlifes.pb(outp(i,i,token));
 			if(strMap.find(token) == strMap.end()) ntoken.pb(strMap.size());
 			else ntoken.pb(strMap[token]);
 			token = "";
@@ -178,10 +179,17 @@ int main(void)
 		sort(maxlifes.begin(), maxlifes.end());
 		maxlifes.erase(unique(maxlifes.begin(), maxlifes.end()), maxlifes.end());
 
-		cout << maxlifes.size() << " " << maxL << endl;
-		for(int i=0;i<maxlifes.size();i++)
+		if(maxlifes.size() == 0)
 		{
-			cout << maxlifes[i].str << " " << maxlifes[i].s+1 << " " << maxlifes[i].e+1 << endl;
+			cout << "0 0" << endl;			
+		}
+		else
+		{
+			cout << maxlifes.size() << " " << maxL << endl;
+			for(int i=0;i<maxlifes.size();i++)
+			{
+				cout << maxlifes[i].str << " " << maxlifes[i].s+1 << " " << maxlifes[i].e+1 << endl;
+			}
 		}
 	}
 }

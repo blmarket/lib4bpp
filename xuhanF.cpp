@@ -226,18 +226,23 @@ void chkdeal(const status &base, int *deal, int pos)
 
 int calc(void)
 {
-	int accum[15] = {0};
 	int dealmap[3][15] = {0};
 	for(int i=0;i<3;i++)
 	{
 		chkdeal(curdata[i],dealmap[i],i+1);
+/*		for(int j=0;j<15;j++)
+			cout << dealmap[i][j] << " ";
+		cout << endl;*/
+	}
 
-		for(int j=0;j<15;j++)
+	int sum=0;
+	for(int i=1;i<15;i++)
+	{
+		for(int j=0;j<3;j++)
 		{
-			if(accum[j] == -1) break;
-			if(dealmap[i][j] == -1) { accum[j] = -1; break; }
-			accum[j] += dealmap[i][j];
-			if(accum[j] >= SY_jing) return j;
+			if(dealmap[j][i] == -1) return -1;
+			sum += dealmap[j][i] - dealmap[j][i-1];
+			if(sum >= SY_jing) return i;
 		}
 	}
 	return -1;
@@ -289,8 +294,9 @@ bool process(int tcase)
 				}
 				curdata[2] = basedata[rk];
 				curstr[2] = names[rk];
-				//cout << names[i] << names[rj] << names[rk] << ":" << calc() << endl;
+//				cout << names[i] << names[rj] << names[rk] << ":";
 				int turns = calc();
+				if(turns > 12) turns = -1;
 				if(turns < 0) continue;
 				if(minturn < 0 || minturn > turns)
 				{
