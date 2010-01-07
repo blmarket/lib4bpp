@@ -13,8 +13,8 @@ $q->failover(1); # Set failover support (on by default).
 
 @labels = qw/price name/;
 
-%stocks = ("069500.KS" => 230, "088980.KS" => 1200, "067250.KS" => 120, "000700.KS" => 50);
-$cash = "531546";
+%stocks = ("069500.KS" => 150, "088980.KS" => 1200, "067250.KS" => 120, "000700.KS" => 8, "117930.KS" => 31);
+$cash = "3168374";
 
 %quotes  = $q->fetch("asia",keys %stocks);
 
@@ -46,7 +46,7 @@ name                 price       holds      total
 .
 
 format STDOUT =
-@<<<<<<<<<<<<<<<<<<  @<<<<<<<    @<<<<<<<<  @<<<<<<<<<<<<<
+@<<<<<<<<<<<<<<<<<<  @<<<<<<<    @<<<<<<<<  @>>>>>>>>>>>>>
 $r{"name"} $r{"price"} $r{"hold"} $r{"price"}*$r{"hold"}
 .
 
