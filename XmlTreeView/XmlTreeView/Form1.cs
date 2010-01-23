@@ -65,5 +65,32 @@ namespace XmlTreeView
                 inTreeNode.Text = (inXmlNode.OuterXml).Trim();
             }
         }
+
+        Color[] avails = new Color[] {
+            Color.Aqua, Color.Red, Color.Beige, Color.Bisque, Color.Black, Color.BlanchedAlmond, Color.Blue, Color.BlueViolet, Color.BurlyWood
+        };
+        static Random Picker = new Random();
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            Timer tt = new Timer();
+            tt.Interval = 2000;
+            tt.Tick += new EventHandler(tt_Tick);
+            tt.Start();
+        }
+
+        private void Traverse(TreeNode node)
+        {
+            node.BackColor = avails[Picker.Next(avails.Length)];
+            foreach (TreeNode cnode in node.Nodes)
+            {
+                Traverse(cnode);
+            }
+        }
+
+        void tt_Tick(object sender, EventArgs e)
+        {
+            Traverse(treeView1.Nodes[0]);
+        }
     }
 }
