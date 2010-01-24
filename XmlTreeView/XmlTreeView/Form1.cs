@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
+using System.IO;
 
 namespace XmlTreeView
 {
@@ -90,24 +91,18 @@ namespace XmlTreeView
             return changed;
         }
 
+        private void LoadXML(XmlDocument dom)
+        {
+            UpdateNode(dom.DocumentElement, treeView1.Nodes);
+        }
+
         private void LoadXML(string filename)
         {
             try
             {
                 XmlDocument dom = new XmlDocument();
                 dom.Load(filename);
-
-                UpdateNode(dom.DocumentElement, treeView1.Nodes);
-/*
-
-                treeView1.Nodes.Clear();
-                treeView1.Nodes.Add(new TreeNode(dom.DocumentElement.Name));
-                TreeNode tNode = new TreeNode();
-                tNode = treeView1.Nodes[0];
-
-                AddNode(dom.DocumentElement, tNode);
- */
-//                treeView1.ExpandAll();
+                LoadXML(dom);
             }
             catch (Exception E)
             {
@@ -136,7 +131,11 @@ namespace XmlTreeView
             tt.Interval = 1000;
             tt.Tick += delegate(object obj, EventArgs ee)
             {
-                LoadXML("sample.XML");
+                string tmpStr = CsDllStudy.Program.getXML();
+                XmlDocument dom = new XmlDocument();
+                StringReader reader = new StringReader(tmpStr);
+                dom.Load(reader);
+                LoadXML(dom);
             };
             tt.Start();
         }
