@@ -1,5 +1,4 @@
 ﻿네모네모 로직(picross) solver
-
 사용법.
 
 Picross 문제가 다음과 같이 있다고 생각하겠습니다.
