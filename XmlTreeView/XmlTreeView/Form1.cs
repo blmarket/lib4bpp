@@ -131,6 +131,14 @@ namespace XmlTreeView
             tt.Interval = 50;
             tt.Tick += new EventHandler(tt_Tick);
             tt.Start();
+
+            tt = new Timer();
+            tt.Interval = 1000;
+            tt.Tick += delegate(object obj, EventArgs ee)
+            {
+                LoadXML("sample.XML");
+            };
+            tt.Start();
         }
 
         public int min(int a, int b)
