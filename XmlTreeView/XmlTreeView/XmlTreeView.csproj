@@ -114,12 +114,6 @@
     <Content Include="Sample.XML" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:\Users\blmarket\Documents\Visual Studio 2008\Projects\CsDllStudy\CsDllStudy\CsDllStudy.csproj">
-      <Project>{5C325774-F409-4469-BB5D-454EA9786B1C}</Project>
-      <Name>CsDllStudy</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
       <Visible>False</Visible>
       <ProductName>.NET Framework 2.0%28x86%29</ProductName>

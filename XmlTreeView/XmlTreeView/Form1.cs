@@ -131,11 +131,13 @@ namespace XmlTreeView
             tt.Interval = 1000;
             tt.Tick += delegate(object obj, EventArgs ee)
             {
-                string tmpStr = CsDllStudy.Program.getXML();
-                XmlDocument dom = new XmlDocument();
-                StringReader reader = new StringReader(tmpStr);
-                dom.Load(reader);
-                LoadXML(dom);
+                LoadXML("Sample.XML");
+                
+                //string tmpStr = CsDllStudy.Program.getXML();
+                //XmlDocument dom = new XmlDocument();
+                //StringReader reader = new StringReader(tmpStr);
+                //dom.Load(reader);
+                //LoadXML(dom);                
             };
             tt.Start();
         }
