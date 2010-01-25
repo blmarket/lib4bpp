@@ -11,18 +11,18 @@ $q->set_currency("KRW");  # Return all info in Euros.
 $q->require_labels(qw/price name/);
 $q->failover(1); # Set failover support (on by default).
 
-@labels = qw/price name/;
+@labels = qw/price net p_change name/;
 
 %stocks = (
 "035250.KS" => 10, 
 "067250.KS" => 120, 
-"069500.KS" => 150, 
+"069500.KS" => 190, 
 "088980.KS" => 1400, 
 "091160.KS" => 50,
-"096040.KQ" => 200,
+#"096040.KQ" => 200,
 "117930.KS" => 31, 
 );
-$cash = "1138441";
+$cash = "1711609";
 
 %quotes  = $q->fetch("asia",keys %stocks);
 
@@ -49,13 +49,13 @@ foreach (keys %quotes)
 }
 
 format STDOUT_TOP =
-name                 price       holds      total
---------------------------------------------------------
+name                       price             holds             total
+------------------------------------------------------------------------
 .
 
 format STDOUT =
-@<<<<<<<<<<<<<<<<<<  @<<<<<<<    @<<<<<<<<  @>>>>>>>>>>>>>
-$r{"name"} $r{"price"} $r{"hold"} $r{"price"}*$r{"hold"}
+@<<<<<<<<<<<<<<<<<<  @>>>>>>>(@<<<<<<<)    @<<<<<<<<  @>>>>>>>>>>>>>
+$r{"name"} $r{"price"} $r{"net"} $r{"hold"} $r{"price"}*$r{"hold"}
 .
 
 my $sum=0;
@@ -68,7 +68,8 @@ foreach (keys %result)
 #	print $result{$_}{"name"}."\t\t".$result{$_}{"price"}."\t\t".$result{$_}{"hold"}."\n";
 }
 
-print "--------------------------------------------------------\n";
+
+print "------------------------------------------------------------------------\n";
 
 $sum += $cash;
 
