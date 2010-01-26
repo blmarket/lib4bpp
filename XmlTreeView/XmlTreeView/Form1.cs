@@ -16,6 +16,10 @@ namespace XmlTreeView
         public Form1()
         {
             InitializeComponent();
+            this.SetStyle(
+              ControlStyles.AllPaintingInWmPaint |
+              ControlStyles.UserPaint |
+              ControlStyles.DoubleBuffer, true);
         }
 
         private void AddNode(XmlNode inXmlNode, TreeNode inTreeNode)
@@ -131,13 +135,24 @@ namespace XmlTreeView
             tt.Interval = 1000;
             tt.Tick += delegate(object obj, EventArgs ee)
             {
-                LoadXML("Sample.XML");
-                
-                //string tmpStr = CsDllStudy.Program.getXML();
-                //XmlDocument dom = new XmlDocument();
-                //StringReader reader = new StringReader(tmpStr);
-                //dom.Load(reader);
-                //LoadXML(dom);                
+                //Fetch new XML
+                //CsDllStudy.Program.UpdateNow("BarkBark");
+                //string tmp = CsDllStudy.Program.getXML();
+                string tmp = "";
+
+                if (tmp.Length == 0)
+                {
+                    treeView1.Nodes.Clear();
+                    treeView1.Nodes.Add("Parse Failed");
+                    treeView1.Nodes[0].BackColor = Color.White;
+                }
+                else
+                {
+                    XmlDocument dom = new XmlDocument();
+                    StringReader reader = new StringReader(tmp);
+                    dom.Load(reader);
+                    LoadXML(dom);
+                }
             };
             tt.Start();
         }
