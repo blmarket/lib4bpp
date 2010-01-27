@@ -17,5 +17,8 @@ namespace XmlTreeView
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
         }
+
+        //public static ISubject XmlSupplier = new SimpleTest();
+        public static ISubject XmlSupplier = new FileReadSubject("Sample.XML");
     }
 }

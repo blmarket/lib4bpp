@@ -100,29 +100,19 @@ namespace XmlTreeView
             UpdateNode(dom.DocumentElement, treeView1.Nodes);
         }
 
-        private void LoadXML(string filename)
-        {
-            try
-            {
-                XmlDocument dom = new XmlDocument();
-                dom.Load(filename);
-                LoadXML(dom);
-            }
-            catch (Exception E)
-            {
-                MessageBox.Show(E.Message);
-            }
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
-            LoadXML("Sample.XML");
         }
 
         Color[] avails = new Color[] {
             Color.Aqua, Color.Red, Color.Beige, Color.Bisque, Color.Black, Color.BlanchedAlmond, Color.Blue, Color.BlueViolet, Color.BurlyWood
         };
         static Random Picker = new Random();
+
+        public void ExplicitUpdate(XmlDocument xml)
+        {
+            LoadXML(xml);
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -138,21 +128,8 @@ namespace XmlTreeView
                 //Fetch new XML
                 //CsDllStudy.Program.UpdateNow("BarkBark");
                 //string tmp = CsDllStudy.Program.getXML();
-                string tmp = "";
 
-                if (tmp.Length == 0)
-                {
-                    treeView1.Nodes.Clear();
-                    treeView1.Nodes.Add("Parse Failed");
-                    treeView1.Nodes[0].BackColor = Color.White;
-                }
-                else
-                {
-                    XmlDocument dom = new XmlDocument();
-                    StringReader reader = new StringReader(tmp);
-                    dom.Load(reader);
-                    LoadXML(dom);
-                }
+                Program.XmlSupplier.Execute(new UpdateDelegate(ExplicitUpdate));
             };
             tt.Start();
         }
@@ -166,9 +143,8 @@ namespace XmlTreeView
         private void Traverse(TreeNode node)
         {
             Color curColor = node.BackColor;
-            if (curColor.ToArgb() == -1)
+            if (curColor.ToArgb() == -1) // it's white
             {
-                //               node.BackColor = Color.FromKnownColor((KnownColor)(Picker.Next(175)));
             }
             else
             {
