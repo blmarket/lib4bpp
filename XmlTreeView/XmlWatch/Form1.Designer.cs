@@ -1,6 +1,6 @@
-﻿namespace XmlTreeView
+﻿namespace XmlWatch
 {
-    partial class Form1
+    partial class XmlWatch
     {
         /// <summary>
         /// 필수 디자이너 변수입니다.
@@ -42,14 +42,14 @@
             this.treeView1.Size = new System.Drawing.Size(1025, 552);
             this.treeView1.TabIndex = 1;
             // 
-            // Form1
+            // XmlWatch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1025, 552);
             this.Controls.Add(this.treeView1);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "XmlWatch";
+            this.Text = "XmlWatch";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 

@@ -8,11 +8,11 @@ using System.Windows.Forms;
 using System.Xml;
 using System.IO;
 
-namespace XmlTreeView
+namespace XmlWatch
 {
-    public partial class Form1 : Form
+    public partial class XmlWatch : Form
     {
-        public Form1()
+        public XmlWatch()
         {
             InitializeComponent();
             this.SetStyle(
@@ -99,15 +99,6 @@ namespace XmlTreeView
             UpdateNode(dom.DocumentElement, treeView1.Nodes);
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-        }
-
-        Color[] avails = new Color[] {
-            Color.Aqua, Color.Red, Color.Beige, Color.Bisque, Color.Black, Color.BlanchedAlmond, Color.Blue, Color.BlueViolet, Color.BurlyWood
-        };
-        static Random Picker = new Random();
-
         public void ExplicitUpdate(XmlDocument xml)
         {
             LoadXML(xml);
@@ -116,18 +107,21 @@ namespace XmlTreeView
         private void Form1_Load(object sender, EventArgs e)
         {
             Timer tt = new Timer();
+            // color update interval in millisec. modify to change color animation interval.
             tt.Interval = 50;
-            tt.Tick += new EventHandler(tt_Tick);
+            tt.Tick += delegate(object obj, EventArgs ee)
+            {
+                // traverse all nodes to update color.
+                Traverse(treeView1.Nodes);
+            };
             tt.Start();
 
             tt = new Timer();
+            // Watch interval in millisec. modify here to change watch interval.
             tt.Interval = 1000;
             tt.Tick += delegate(object obj, EventArgs ee)
             {
-                //Fetch new XML
-                //CsDllStudy.Program.UpdateNow("BarkBark");
-                //string tmp = CsDllStudy.Program.getXML();
-
+                // Get New XML. Modify here to 
                 Program.XmlSupplier.Execute(new UpdateDelegate(ExplicitUpdate));
             };
             tt.Start();
@@ -144,12 +138,15 @@ namespace XmlTreeView
             Color curColor = node.BackColor;
             if (curColor.ToArgb() == -1) // it's white
             {
+                // do nothing.
             }
             else
             {
                 curColor = Color.FromArgb(min(255, curColor.R + 10), min(255, curColor.G + 10), min(255, curColor.B + 10));
                 node.BackColor = curColor;
             }
+
+            // traverse childs.
             foreach (TreeNode cnode in node.Nodes)
             {
                 Traverse(cnode);
@@ -158,15 +155,11 @@ namespace XmlTreeView
 
         private void Traverse(TreeNodeCollection col)
         {
+            // traverse all
             foreach(TreeNode cnode in col)
             {
                 Traverse(cnode);
             }
-        }
-
-        void tt_Tick(object sender, EventArgs e)
-        {
-            Traverse(treeView1.Nodes);
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace XmlTreeView
+namespace XmlWatch
 {
     static class Program
     {
@@ -14,7 +14,7 @@ namespace XmlTreeView
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new XmlWatch());
         }
 
         public static ISubject XmlSupplier = new SimpleTest();

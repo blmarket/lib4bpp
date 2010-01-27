@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlTreeView", "XmlTreeView\XmlTreeView.csproj", "{F2AA67E1-A92F-46EA-84AB-D1B2B463345C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlWatch", "XmlWatch\XmlWatch.csproj", "{F2AA67E1-A92F-46EA-84AB-D1B2B463345C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
