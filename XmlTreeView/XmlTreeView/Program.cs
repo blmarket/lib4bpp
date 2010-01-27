@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Forms;
 
 namespace XmlTreeView
@@ -18,7 +17,7 @@ namespace XmlTreeView
             Application.Run(new Form1());
         }
 
-        //public static ISubject XmlSupplier = new SimpleTest();
-        public static ISubject XmlSupplier = new FileReadSubject("Sample.XML");
+        public static ISubject XmlSupplier = new SimpleTest();
+        //public static ISubject XmlSupplier = new FileReadSubject("Sample.XML");
     }
 }

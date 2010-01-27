@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using System.IO;
@@ -29,10 +28,13 @@ namespace XmlTreeView
 
     public class SimpleTest : SimpleSubject
     {
+        private int count = 0;
+
         public override XmlDocument Run()
         {
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml("<xml><child>It is test</child><child2>Hehe</child2></xml>");
+            doc.LoadXml("<xml><child>It is test</child><child2>" + count + "</child2></xml>");
+            count += 1;
             return doc;
         }
     }
