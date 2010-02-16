@@ -22,9 +22,9 @@ $q->failover(1); # Set failover support (on by default).
 "088980.KS" => 1700, 
 "091160.KS" => 50,
 #"096040.KQ" => 200,
-"117930.KS" => 31, 
+#"117930.KS" => 31, 
 );
-$cash = "3171402";
+$cash = "3974752";
 
 %quotes  = $q->fetch("asia",keys %stocks);
 
