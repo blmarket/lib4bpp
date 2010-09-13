@@ -22,6 +22,7 @@ import re
 
 income = {}
 expense = {}
+smallexpense = {}
 
 def exclude(row):
     if row[2] == '사이버자금이체':
@@ -46,14 +47,18 @@ def processrow(row):
             print item,
         print "Excluded"
         return
-    YM = datetime.strptime(row[0],'%Y-%m-%d').strftime('%Y-%m')
+    YM = datetime.strptime(row[0],'%Y.%m.%d %H:%M').strftime('%Y-%m')
     if not YM in income:
         income[YM]=0
     if not YM in expense:
         expense[YM]=0
+    if not YM in smallexpense:
+        smallexpense[YM] = 0
 
     income[YM] = income[YM] + int(row[4])
     expense[YM] = expense[YM] + int(row[3])
+    if int(row[3]) <= 10000:
+        smallexpense[YM] = smallexpense[YM] + int(row[3])
 
 if len(sys.argv) >= 2:
     fh = open(sys.argv[1], 'r')
@@ -68,4 +73,4 @@ for row in csv_reader:
     processrow(row)
 
 for YM in sorted(income.keys()):
-    print YM,income[YM],expense[YM]
+    print YM,income[YM],expense[YM],smallexpense[YM]
