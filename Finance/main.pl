@@ -25,15 +25,15 @@ $q->failover(1); # Set failover support (on by default).
 "000660.KS" => [50,1132500],
 "000700.KS" => [0,0],
 "095660.KQ" => [0,0],
-"078520.KQ" => [100,1825000],
+"078520.KQ" => [120,2178000],
 "086790.KS" => [0,0],
 "105560.KS" => [0,0],
-"034220.KS" => [50, 1779287],
-"030200.KS" => [100, 4145000],
-"086790.KS" => [100, 3145000],
+"034220.KS" => [0,0],
+"030200.KS" => [0,0],
+"086790.KS" => [0,0],
 );
 
-$cash = "7717978";
+$cash = "17437823";
 
 %quotes  = $q->fetch("asia",keys %stocks);
 
@@ -100,5 +100,7 @@ $sum += $cash;
 
 print "Cash : $cash\n";
 print "Total : $sum\n";
+
+print "Sell Log\nKT 46250\nLGD 37650\nHANA 35950\n";
 
 #print Dumper(%result);
