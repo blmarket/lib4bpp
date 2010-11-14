@@ -18,9 +18,11 @@
   </div>
 
   <div data-role="content">
+    <!--
     <ul data-role="listview" data-inset="true">
       <li><img src="logs-images/album-bb.jpg" alt="France" class="ui-li-icon"><a href="index.html">France</a> <span class="ui-li-count">4</span></li>
     </ul>
+    -->
 
     <ul data-role="listview" data-inset="true">
       <?php
@@ -30,8 +32,18 @@ SELECT * FROM t1 ORDER BY key_part1 DESC, key_part2 ASC;
         $sql="select * from banklogs order by date desc;";
         $stmt = $pdo->query($sql);
 
+        $lastdate = "";
+
         foreach($stmt as $row)
         {
+          if($row["date"] != $lastdate)
+          {
+            $lastdate = $row["date"];
+            ?>
+              <li data-role="list-divider">[<?=$lastdate?>]</li>
+            <?
+          }
+
           $var = $row["income"] - $row["expense"];
           $class;
           switch($row["cat"]) // TODO: 이것좀 어떻게 정리해봐?
@@ -48,8 +60,8 @@ SELECT * FROM t1 ORDER BY key_part1 DESC, key_part2 ASC;
           }
           ?>
             <li class="<?=$class?>">
-              <img src="logs-images/album-bb.jpg" alt="bb"/>
-              <h3><a href="detail_log.php?id=<?=$row["index"]?>">[<?=$row["date"]?>]<?=$var?> : <?=$row["name"]?></a></h3>
+              <!--<img src="logs-images/album-bb.jpg" alt="bb"/>-->
+              <h3><a href="detail_log.php?id=<?=$row["index"]?>"><?=$var?> : <?=$row["name"]?></a></h3>
               <p><?=$row["memo"]?></p>
               <span class="ui-li-count">4</span>
               <a href="detail_log.php?id=<?=$row["index"]?>">asdf</a>
