@@ -14,8 +14,6 @@
 <?
   if( is_uploaded_file( $_FILES['uploaded_file']['tmp_name'] ) )
   {  
-    print_r($_FILES);
-
     $handle = @fopen($_FILES['uploaded_file']['tmp_name'], "r");
 
     if( ! $handle)
@@ -24,14 +22,26 @@
         return;
     }
 
+    $query = "INSERT INTO `banklogs` (`date`,`dateindex`,`category`,`name`,`expense`,`income`,`bank`,`memo`) VALUES (:date,:dateindex,:category,:name,:expense,:income,:bank,:memo);";
+    $stmt = $pdo->prepare($query);
+
     while( ! feof($handle))
     {
         // read one line
-        $buffer = mb_convert_encoding(fgets($handle, 8192), "utf-8", "euc-kr");
+        $buffer = fgets($handle, 8192); //, "utf-8", "euc-kr");
 
-        if(preg_match("/memo_array/", $buffer))
+        if(preg_match("/memo_array\[[0-9]*\].*Array\('(.*)','(.*)','(.*)','(.*)','(.*)','(.*)','(.*)','(.*)','(.*)','(.*)','(.*)','(.*)','(.*)','(.*)'/", $buffer, $matches))
         {
-            print("$buffer\n");
+            $stmt->execute(array(
+                ':date' => $matches[2],
+                ':dateindex' => $matches[3],
+                ':category' => $matches[4],
+                ':name' => $matches[5],
+                ':expense' => strtr($matches[6],array("," => "")),
+                ':income' => strtr($matches[7],array(","=>"")),
+                ':bank' => $matches[9],
+                ':memo' => $matches[10],
+                ));
         }
         /*
             $query = "INSERT INTO `banklogs` (`date`,`category`,`name`,`expense`,`income`,`bank`,`memo`) VALUES (:date,:category,:name,:expense,:income,:bank,:memo);";
@@ -58,6 +68,8 @@
     fclose($handle);
     
     $fileData = file_get_contents($_FILES['uploaded_file']['tmp_name']);
+
+    echo "Done";
 
     /*
     ?>

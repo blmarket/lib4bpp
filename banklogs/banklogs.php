@@ -29,16 +29,16 @@
       /*
 SELECT * FROM t1 ORDER BY key_part1 DESC, key_part2 ASC;
       */
-        $sql="select * from banklogs order by date desc;";
+        $sql="select *,DATE(date) as dd from banklogs order by `date` DESC, `dateindex` DESC;";
         $stmt = $pdo->query($sql);
 
         $lastdate = "";
 
         foreach($stmt as $row)
         {
-          if($row["date"] != $lastdate)
+          if($row["dd"] != $lastdate)
           {
-            $lastdate = $row["date"];
+            $lastdate = $row["dd"];
             ?>
               <li data-role="list-divider">[<?=$lastdate?>]</li>
             <?

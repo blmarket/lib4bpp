@@ -31,7 +31,7 @@
     <div class="ui-bar ui-bar-d" data-inset="true">
       <table>
         <tr>
-          <th scope="row" width=70px>거래일시</th>
+          <th scope="row" width=80px>거래일시</th>
           <td><?=$row["date"]?></td>
         </tr>
         <tr>
