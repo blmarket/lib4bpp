@@ -30,13 +30,14 @@
 
         if(strpos($buffer, "메모") != FALSE)
         {
-            print("Memo Found asdf<br/>");
-            $bmt = "<table>" . mb_convert_encoding(fread($handle, $_FILES['uploaded_file']['size']), "utf-8", "euc-kr");
+            //$bmt = "<table>" . fread($handle, $_FILES['uploaded_file']['size']);
+            $bmt = "<table>" . mb_convert_encoding(fread($handle, $_FILES['uploaded_file']['size']), "utf-8", "euc-kr") . "</table>";
+            $bmt = mb_convert_encoding($bmt, 'html-entities', 'utf-8');
 
             $dom = new domDocument;
             $dom->loadHTML($bmt);
 
-            print($dom->actualEncoding . "<br/>");
+            print($dom->encoding. "<br/>");
 
             $dom->preserveWhiteSpace = false;
 
@@ -44,19 +45,15 @@
 
             $table = $tables->item(0);
 
-            /*** get all rows from the table ***/
             $rows = $table->getElementsByTagName('tr');
 
-            /*** loop over the table rows ***/
             foreach ($rows as $row)
             {
-                /*** get each column by tag name ***/
                 $cols = $row->getElementsByTagName('td');
-                /*** echo the values ***/
-                echo mb_convert_encoding($cols->item(0)->nodeValue, "euc-kr", "utf-8").'<br />';
+                echo $cols->item(0)->nodeValue.'<br />';
                 echo $cols->item(1)->nodeValue.'<br />';
                 echo $cols->item(2)->nodeValue;
-                echo '<hr />'; 
+                print('<hr />'."\n");
             }
         }
     }
