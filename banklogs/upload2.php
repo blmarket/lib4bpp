@@ -26,14 +26,26 @@
 
     while( ! feof($handle))
     {
-        // read one line
         $buffer = mb_convert_encoding(fgets($handle, 8192), "utf-8", "euc-kr");
 
-        if(preg_match("/memo_array/", $buffer))
+        if(strpos($buffer, "메모") != FALSE)
         {
-            print("$buffer\n");
-        }
-        /*
+            //$bmt = "<table>" . fread($handle, $_FILES['uploaded_file']['size']);
+            $bmt = "<table>" . mb_convert_encoding(fread($handle, $_FILES['uploaded_file']['size']), "utf-8", "euc-kr") . "</table>";
+            
+            $bmt = mb_convert_encoding($bmt, 'html-entities', 'utf-8');
+
+            $dom = new domDocument;
+            $dom->loadHTML($bmt);
+
+            $dom->preserveWhiteSpace = false;
+
+            $tables = $dom->getElementsByTagName('table');
+
+            $table = $tables->item(0);
+
+            $rows = $table->getElementsByTagName('tr');
+
             $query = "INSERT INTO `banklogs` (`date`,`category`,`name`,`expense`,`income`,`bank`,`memo`) VALUES (:date,:category,:name,:expense,:income,:bank,:memo);";
             $stmt = $pdo->prepare($query);
 
@@ -52,7 +64,6 @@
                     ));
             }
         }
-        */
     }
 
     fclose($handle);
