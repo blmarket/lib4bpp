@@ -32,12 +32,11 @@
         {
             //$bmt = "<table>" . fread($handle, $_FILES['uploaded_file']['size']);
             $bmt = "<table>" . mb_convert_encoding(fread($handle, $_FILES['uploaded_file']['size']), "utf-8", "euc-kr") . "</table>";
+            
             $bmt = mb_convert_encoding($bmt, 'html-entities', 'utf-8');
 
             $dom = new domDocument;
             $dom->loadHTML($bmt);
-
-            print($dom->encoding. "<br/>");
 
             $dom->preserveWhiteSpace = false;
 
@@ -47,13 +46,22 @@
 
             $rows = $table->getElementsByTagName('tr');
 
+            $query = "INSERT INTO `banklogs` (`date`,`category`,`name`,`expense`,`income`,`bank`,`memo`) VALUES (:date,:category,:name,:expense,:income,:bank,:memo);";
+            $stmt = $pdo->prepare($query);
+
             foreach ($rows as $row)
             {
                 $cols = $row->getElementsByTagName('td');
-                echo $cols->item(0)->nodeValue.'<br />';
-                echo $cols->item(1)->nodeValue.'<br />';
-                echo $cols->item(2)->nodeValue;
-                print('<hr />'."\n");
+
+                $stmt->execute(array(
+                    ':date' => $cols->item(0)->nodeValue,
+                    ':category' => $cols->item(1)->nodeValue,
+                    ':name' => $cols->item(2)->nodeValue,
+                    ':expense' => strtr($cols->item(3)->nodeValue,array("," => "")),
+                    ':income' => strtr($cols->item(4)->nodeValue,array(","=>"")),
+                    ':bank' => $cols->item(6)->nodeValue,
+                    ':memo' => $cols->item(7)->nodeValue,
+                    ));
             }
         }
     }
