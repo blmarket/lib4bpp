@@ -2,10 +2,10 @@
 <html>
 <head>
         <title>가계부 Mobile : Hell on Earth</title>
-        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0a1/jquery.mobile-1.0a1.min.css" />
+        <link rel="stylesheet" href="jquery.mobile-1.0a2.min.css" />
         <link rel="stylesheet" href="test.css" />
         <script src="jquery-1.4.3.min.js"></script>
-        <script src="jquery.mobile-1.0a1.min.js"></script>
+        <script src="jquery.mobile-1.0a2.min.js"></script>
         <script src="test.js"></script>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head> 
