@@ -22,7 +22,7 @@
         return;
     }
 
-    $query = "INSERT INTO `banklogs` (`date`,`dateindex`,`category`,`name`,`expense`,`income`,`bank`,`memo`) VALUES (:date,:dateindex,:category,:name,:expense,:income,:bank,:memo);";
+    $query = "INSERT INTO `banklogs` (`date`,`dateindex`,`category`,`name`,`expense`,`income`,`bank`,`memo`,`cat`) VALUES (:date,:dateindex,:category,:name,:expense,:income,:bank,:memo,:cat);";
     $stmt = $pdo->prepare($query);
 
     while( ! feof($handle))
@@ -41,6 +41,7 @@
                 ':income' => strtr($matches[7],array(","=>"")),
                 ':bank' => $matches[9],
                 ':memo' => $matches[10],
+                ':cat' => (int)$matches[6] != 0 ? 1 : 2,
                 ));
         }
         /*
