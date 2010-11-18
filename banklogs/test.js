@@ -95,10 +95,8 @@ $('#tagselectlist').live('listviewcreate', function() {
 
   list.find("a").click(function()
   {
-    alert($(this).data("logid") + " " + $(this).data("tagid") + " " + $(this).data("tagged"));
     $.post(
       "settag.php", { logid: $(this).data("logid"), tagid: $(this).data("tagid"), tagged: $(this).data("tagged") }, function(data) {
-        alert("Result : " + data);
         window.location.reload(true);
       }
     );

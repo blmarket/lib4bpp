@@ -76,9 +76,9 @@
       <li data-role="list-divider">Tags</li>
       <?
         $tagstmt = $pdo->prepare("SELECT t.index,t.tag,ts.logindex
-          FROM tags AS t LEFT OUTER JOIN tagselect AS ts 
+          FROM tags AS t LEFT OUTER JOIN (select * from tagselect where tagselect.logindex=:index) AS ts 
             ON (t.index = ts.tagindex) 
-          WHERE ts.logindex=:index OR ts.logindex IS NULL ORDER by t.index;");
+          ORDER by t.index;");
         $tagstmt->bindParam(':index', $_GET["id"]);
         $tagstmt->execute();
         foreach($tagstmt as $tag)
