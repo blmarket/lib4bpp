@@ -17,9 +17,9 @@ $q->failover(1); # Set failover support (on by default).
 
 %stocks = (
 "000660.KS" => [0,0],
-"030200.KS" => [30,1347000],
+"030200.KS" => [40,1811556],
 "035250.KS" => [10,159000],
-"078520.KQ" => [70,1270500],
+"078520.KQ" => [40,726000],
 "088980.KS" => [1000,4863199], 
 "067250.KS" => [0,0],
 "069500.KS" => [0,0],
@@ -30,10 +30,11 @@ $q->failover(1); # Set failover support (on by default).
 "086790.KS" => [0,0],
 "105560.KS" => [0,0],
 "034220.KS" => [0,0],
-"086790.KS" => [100,3338500],
+"086790.KS" => [70,2449370],
+"088350.KS" => [300, 2245000],
 );
 
-$cash = "15404205";
+$cash = "5695690";
 
 %quotes  = $q->fetch("asia",keys %stocks);
 
@@ -67,7 +68,7 @@ name                       price             holds             total
 
 format STDOUT =
 @<<<<<<<<<<<<<<<<<<  @>>>>>>>(@<<<<<<<)    @<<<<<<<<  @>>>>>>>>>>>>>(@>>>>>%)
-$r{"name"} $r{"price"} $r{"net"} $r{"hold"} $r{"price"}*$r{"hold"} $r{"invested"}?$r{"price"}*$r{"hold"}/$r{"invested"}*100-100:"---"
+$r{"name"} $r{"price"} $r{"net"} $r{"hold"} $r{"price"}*$r{"hold"} $r{"invested"}?$r{"price"}*$r{"hold"}*0.997/$r{"invested"}*100-100:"---"
 .
 
 my $sum=0;
